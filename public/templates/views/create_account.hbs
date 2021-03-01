@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <title>Bibliotech</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="A library inventory service for book collectors.">
+    <meta name="author" content="Barnaby Thieme">
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
+    <script src="../js/create_account.js" defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <header>
+        <h1>Bibliotech</h1>
+    </header>
+
+    <nav>{{>nav}}</nav>
+
+    <main>
+        <h2>Set Up a New Account</h2>
+        <form id="createAccount" method="post" action="/create_account">
+            <input type="text" id="username" placeholder="user name" name="username">
+            <br><br>
+            <input type="password" id="password" placeholder="password" name="password">
+            <br><br>
+            <input type="password" id="passwordConfirm" placeholder="confirm password" name="passwordConfirm">
+            <br><br>
+            <!--submit-->
+            <button type="button" id="createAccountButton" value="submit">Create Account</button>
+        </form>
+    </main>
+</body>
+
+</html>

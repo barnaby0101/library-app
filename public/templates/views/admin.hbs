@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <title>Admin</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="A library inventory service for book collectors.">
+    <meta name="author" content="Barnaby Thieme">
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
+    <link rel="stylesheet" type="text/css" href="../css/index.css">
+    <script src="../js/admin.js" defer></script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <header>
+        <h1>Admin</h1>
+    </header>
+
+    <nav>
+        {{>nav}}
+    </nav>
+
+    <main>
+        <ul class="buttons">
+            <li><button id="createDb" type="button">Create Database</button></li>
+            <li><button id="deleteDb" type="button">Delete Database</button></li>
+        </ul>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <title>Add a Book</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="A simple Node app with a MySQL backend.">
+    <meta name="author" content="Barnaby Thieme">
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
+    <link rel="stylesheet" type="text/css" href="../css/jquery.toast.css">
+    <script src="../js/add.js" defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../js/jquery.toast.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <header>
+        <h1>Add a Book</h1>
+    </header>
+
+    <nav>{{>nav}}</nav>
+
+    <main>
+
+        <form id="addBook" method="post" action="/">
+            <input type="text" id="title" placeholder="Title" name="title" required>
+            <br><br>
+            <input type="text" id="authorFirstName" placeholder="Author's First Name" name="authorFirstName" required>
+            <br><br>
+            <input type="text" id="authorLastName" placeholder="Author's Last Name" name="authorLastName" required>
+            <br><br>
+            <input type="number" id="pubDate" placeholder="Year of Publication" name="pubDate">
+            <br><br>
+            <input type="text" id="pub" placeholder="Publisher" name="pub">
+            <br><br>
+            <input type="number" id="numPages" placeholder="Number of Pages" name="numPages">
+            <br><br>
+            <input type="text" id="desc" placeholder="Description" name="desc">
+            <br><br>
+            <!--submit--> 
+            <button type="button" id="submitButton" value="submit">Submit</button>
+        </form>
+
+    </main>
+</body>
+</html>
