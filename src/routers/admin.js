@@ -1,12 +1,13 @@
 "use strict";
 
 const express = require("express");
-const mysql = require("mysql");
-const mysqlPassword = process.env.MYSQL_PASSWORD;
-const { createDb, deleteDb, addBook, test } = require("../utils/mySql");
+const { createDb, deleteDb, test } = require("../utils/mySql");
 
 const router = new express.Router();
 router.use(express.urlencoded({ extended: true }));
+
+const mysql = require("mysql");
+const mysqlPassword = process.env.MYSQL_PASSWORD;
 
 // create database
 router.post("/createDb", (req, res) => {
@@ -17,14 +18,6 @@ router.post("/createDb", (req, res) => {
 // delete database
 router.post("/deleteDb", (req, res) => {
     deleteDb();
-})
-
-// add book
-router.post("/", (req, res) => {
-    const book = req.body;
-    console.log("Request Body: ", book);
-    addBook(book);
-    res.status(200).send();
 })
 
 // run test function

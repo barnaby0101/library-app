@@ -45,6 +45,5 @@ const checkDbExists = async () => {
         type: "GET",
         cache: false,
     });
-    console.log("result", result);
     return result;
 }

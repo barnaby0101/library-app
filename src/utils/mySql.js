@@ -9,14 +9,13 @@ const connection = mysql.createConnection({
     password: mysqlPassword
 });
 
-const checkDbExists = () => {
-    var result = true;
-    connection.query(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = "collection";`, (error, results) => {        
+// connection.end(function(err) {});
+
+const deleteDb = () => {
+    connection.query('DROP DATABASE IF EXISTS library;', (error, results, fields) => {
         if (error) throw error;
-        if (results.length === 0) { result = false; }
-        console.log("result: ", result);
-        return result;
-    })
+    });
+    console.log("Database deleted!");
 }
 
 const createDb = () => {
@@ -40,13 +39,6 @@ const createDb = () => {
     console.log("Database created!");
 }
 
-const deleteDb = () => {
-    connection.query('DROP DATABASE IF EXISTS library;', (error, results, fields) => {
-        if (error) throw error;
-    });
-    console.log("Database deleted!");
-}
-
 const addBook = (book) => {
     connection.query("USE library;", (error) => {
         if (error) throw error;
@@ -65,6 +57,5 @@ module.exports = {
     createDb, 
     deleteDb,
     addBook, 
-    checkDbExists, 
     // test
 };
