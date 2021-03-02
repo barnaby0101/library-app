@@ -1,7 +1,7 @@
 "use strict";
 
 const express = require("express");
-const { createDb, deleteDb, test } = require("../utils/mySql");
+const { createDb, deleteDb, checkDbExists } = require("../utils/mySql");
 
 const router = new express.Router();
 router.use(express.urlencoded({ extended: true }));
@@ -20,24 +20,10 @@ router.post("/deleteDb", (req, res) => {
     deleteDb();
 })
 
-// run test function
-router.post("/test", (req, res) => {
-    test();
-})
-
 // does library exist
-router.get("/does_db_exist", (req, res) => {
-    const connection = mysql.createConnection({
-        host: "localhost",
-        user: "devuser",
-        password: mysqlPassword
-    });
-    connection.query(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = "library";`, (error, results) => {        
-        var result = false;
-        if (error) throw error;
-        if (results.length !== 0) result = true;
-        res.send(result);
-    })
+router.get("/does_db_exist", async (req, res) => {
+    console.log("exists", exists);
+    res.send(exists);
 })
 
 module.exports = router;

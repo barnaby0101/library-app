@@ -28,7 +28,6 @@ $(document).ready(() => {
                 window.alert("There is no database to delete!");
             }
         })
-        
     });
 });
 

@@ -1,6 +1,7 @@
 "use strict";
 
 const mysql = require("mysql");
+const mysqlAsync = require("promise-mysql");
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 
 const connection = mysql.createConnection({
@@ -53,9 +54,25 @@ const addBook = (book) => {
     console.log("Book Added!");
 }
 
+async function checkDbExists() {
+    let connection;
+    return mysqlAsync.createConnection({
+        host: "localhost",
+        user: "devuser",
+        password: mysqlPassword
+    }).then(async (conn) => {
+        connection = conn;
+        return await connection.query(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = "library";`);
+    }).then((res) => {
+        let outcome = false;
+        if (res.length !== 0) outcome = true;
+        return outcome;
+    })
+}
+
 module.exports = {
     createDb, 
     deleteDb,
     addBook, 
-    // test
+    checkDbExists
 };
