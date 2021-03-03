@@ -4,22 +4,25 @@ const mysql = require("mysql");
 const mysqlAsync = require("promise-mysql");
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 
-const connection = mysql.createConnection({
-    host: "localhost",
-    user: "devuser",
-    password: mysqlPassword
-});
-
-// connection.end(function(err) {});
-
 const deleteDb = () => {
+    const connection = mysql.createConnection({
+        host: "localhost",
+        user: "devuser",
+        password: mysqlPassword
+    });
     connection.query('DROP DATABASE IF EXISTS library;', (error, results, fields) => {
         if (error) throw error;
     });
+    connection.end(function(err) {});
     console.log("Database deleted!");
 }
 
 const createDb = () => {
+    const connection = mysql.createConnection({
+        host: "localhost",
+        user: "devuser",
+        password: mysqlPassword
+    });
     connection.query("CREATE DATABASE IF NOT EXISTS library;", (error) => {
         if (error) throw error;
     });
@@ -33,14 +36,20 @@ const createDb = () => {
             if (error) throw error;
         });
     connection.query(`CREATE TABLE IF NOT EXISTS Users 
-        (name_first VARCHAR(30), name_last VARCHAR(30), password VARCHAR(30) );`,
+        (username VARCHAR(30), password VARCHAR(30) );`,
     (error) => {
         if (error) throw error;
     });
+    connection.end(function(err) {});
     console.log("Database created!");
 }
 
 const addBook = (book) => {
+    const connection = mysql.createConnection({
+        host: "localhost",
+        user: "devuser",
+        password: mysqlPassword
+    });
     connection.query("USE library;", (error) => {
         if (error) throw error;
     });
@@ -51,6 +60,7 @@ const addBook = (book) => {
         (error, results, fields) => {
             if (error) throw error;
         });
+    connection.end(function(err) {});
     console.log("Book Added!");
 }
 
@@ -68,11 +78,29 @@ async function checkDbExists() {
         if (res.length !== 0) outcome = true;
         return outcome;
     })
+    connection.end()
+}
+
+const createUser = (newUser) => {
+    const connection = mysql.createConnection({
+        host: "localhost",
+        user: "devuser",
+        password: mysqlPassword
+    });
+    connection.query("USE library;", (error) => {
+        if (error) throw error;
+    });
+    connection.query(`INSERT INTO Users (username, password) VALUES ("${newUser.username}", "${newUser.password}");`,
+        (error, results, fields) => {
+            if (error) throw error;
+        });
+    connection.end()
 }
 
 module.exports = {
     createDb, 
     deleteDb,
     addBook, 
-    checkDbExists
+    checkDbExists,
+    createUser
 };

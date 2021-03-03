@@ -18,12 +18,13 @@ router.post("/createDb", (req, res) => {
 // delete database
 router.post("/deleteDb", (req, res) => {
     deleteDb();
+    res.status(200).send();
 })
 
 // does library exist
 router.get("/does_db_exist", async (req, res) => {
-    console.log("exists", exists);
-    res.send(exists);
+    const result = await checkDbExists();
+    res.send(result);
 })
 
 module.exports = router;
