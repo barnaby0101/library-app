@@ -7,8 +7,6 @@ const admin = require("./routers/admin");
 const book = require("./routers/book");
 const user = require("./routers/user");
 
-// express server
-
 const app = express();
 app.use(admin, book, user);
 
@@ -24,6 +22,7 @@ app.set("view engine", "hbs");  // handlebars node plugin
 app.set("views", viewsPath);
 hbs.registerPartials(partialsPath);
 
+// Express setup
 app.use(express.static(publicDirectoryPath));
 app.use(express.urlencoded({ extended: true }));
 

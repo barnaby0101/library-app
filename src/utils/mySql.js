@@ -31,12 +31,12 @@ const createDb = () => {
     });
     connection.query(`CREATE TABLE IF NOT EXISTS Books 
             (title VARCHAR(100), author_name_first VARCHAR(30), author_name_last VARCHAR(30), pub_date INT, 
-            pub VARCHAR(30), num_pages Int, description VARCHAR(200), BookID INT PRIMARY KEY AUTO_INCREMENT );`,
+            pub VARCHAR(30), num_pages Int, description VARCHAR(200), book_id INT PRIMARY KEY AUTO_INCREMENT);`,
         (error) => {
             if (error) throw error;
         });
     connection.query(`CREATE TABLE IF NOT EXISTS Users 
-        (username VARCHAR(30), password VARCHAR(30) );`,
+        (username VARCHAR(30), password VARCHAR(30), user_id INT PRIMARY KEY AUTO_INCREMENT, role ENUM("user", "admin") );`,
     (error) => {
         if (error) throw error;
     });
@@ -72,14 +72,17 @@ async function checkDbExists() {
         password: mysqlPassword
     }).then(async (conn) => {
         connection = conn;
-        return await connection.query(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = "library";`);
+        return await connection.query(`SELECT SCHEMA_NAME 
+            FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = "library";`);
     }).then((res) => {
         let outcome = false;
         if (res.length !== 0) outcome = true;
+        connection.end();
         return outcome;
     })
-    connection.end()
 }
+
+
 
 const createUser = (newUser) => {
     const connection = mysql.createConnection({
@@ -90,7 +93,8 @@ const createUser = (newUser) => {
     connection.query("USE library;", (error) => {
         if (error) throw error;
     });
-    connection.query(`INSERT INTO Users (username, password) VALUES ("${newUser.username}", "${newUser.password}");`,
+    connection.query(`INSERT INTO Users (username, password, role) 
+            VALUES ("${newUser.username}", "${newUser.password}", "admin");`, // TODO for now all users are admin
         (error, results, fields) => {
             if (error) throw error;
         });
