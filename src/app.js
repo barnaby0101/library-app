@@ -3,17 +3,17 @@
 const express = require("express");
 const hbs = require("hbs");
 const path = require("path");
+
+const account = require("./routers/account");
 const admin = require("./routers/admin");
 const book = require("./routers/book");
-const user = require("./routers/user");
 
 const app = express();
-app.use(admin, book, user);
+app.use(account, admin, book);
 
 const port = process.env.PORT || 3000;
 
 const publicDirectoryPath = path.join(__dirname, "../public");
-const htmlPath = path.join(__dirname, "../public/html");
 const viewsPath = path.join(__dirname, "../public/templates/views");
 const partialsPath = path.join(__dirname, "../public/templates/partials");
 
@@ -26,8 +26,8 @@ hbs.registerPartials(partialsPath);
 app.use(express.static(publicDirectoryPath));
 app.use(express.urlencoded({ extended: true }));
 
-app.get("", (req, res) => {
-  res.render("index.hbs"); 
+app.get("/", (req, res) => {
+  res.render("index.hbs", { user: req.user }); 
 })
 
 app.get("/library", (req, res) => {
@@ -47,7 +47,7 @@ app.get("/admin", (req, res) => {
 })
 
 app.get("*", (req, res) => { 
-    res.sendFile(path.join(htmlPath +'/404.html'));
+  res.render("404"); 
 })
 
 app.listen(port, () => {

@@ -44,26 +44,6 @@ const createDb = () => {
     console.log("Database created!");
 }
 
-const addBook = (book) => {
-    const connection = mysql.createConnection({
-        host: "localhost",
-        user: "devuser",
-        password: mysqlPassword
-    });
-    connection.query("USE library;", (error) => {
-        if (error) throw error;
-    });
-    connection.query(`INSERT INTO Books 
-            (Title, author_name_first, author_name_last, pub_date, pub, num_pages, description) VALUES 
-            ("${book.title}", "${book.authorFirstName}", "${book.authorLastName}", "${book.pubDate}", 
-            "${book.pub}", "${book.numPages}", "${book.desc}");`,
-        (error, results, fields) => {
-            if (error) throw error;
-        });
-    connection.end(function(err) {});
-    console.log("Book Added!");
-}
-
 async function checkDbExists() {
     let connection;
     return mysqlAsync.createConnection({
@@ -72,39 +52,17 @@ async function checkDbExists() {
         password: mysqlPassword
     }).then(async (conn) => {
         connection = conn;
-        return await connection.query(`SELECT SCHEMA_NAME 
-            FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = "library";`);
+        return await connection.query(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = "library";`);
     }).then((res) => {
+        connection.end()
         let outcome = false;
         if (res.length !== 0) outcome = true;
-        connection.end();
         return outcome;
     })
-}
-
-
-
-const createUser = (newUser) => {
-    const connection = mysql.createConnection({
-        host: "localhost",
-        user: "devuser",
-        password: mysqlPassword
-    });
-    connection.query("USE library;", (error) => {
-        if (error) throw error;
-    });
-    connection.query(`INSERT INTO Users (username, password, role) 
-            VALUES ("${newUser.username}", "${newUser.password}", "admin");`, // TODO for now all users are admin
-        (error, results, fields) => {
-            if (error) throw error;
-        });
-    connection.end()
 }
 
 module.exports = {
     createDb, 
     deleteDb,
-    addBook, 
-    checkDbExists,
-    createUser
+    checkDbExists
 };

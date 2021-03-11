@@ -1,7 +1,7 @@
 "use strict";
 
 const express = require("express");
-const { createDb, deleteDb, checkDbExists } = require("../utils/mySql");
+const { createDb, deleteDb, checkDbExists } = require("../db/admin_db");
 
 const router = new express.Router();
 router.use(express.urlencoded({ extended: true }));
