@@ -2,7 +2,7 @@ $("#submitButton").click((e) => {
     e.preventDefault();	
     const dataToSend = $("#addBook").serializeArray();
     $.ajax({
-        url: "/",
+        url: "/book/add",
         type: "POST",
         data: dataToSend,
         cache: false,
