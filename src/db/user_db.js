@@ -1,79 +1,54 @@
 "use strict";
 
 const mysql = require("mysql");
-const mysqlAsync = require("promise-mysql");
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 
-async function checkUserExists(username) {
-    let connection;
-    return mysqlAsync.createConnection({
+const getUser = (id, username, cb) => {
+    let user = {};
+    const connection = mysql.createConnection({
         host: "localhost",
         user: "devuser",
         password: mysqlPassword
-    }).then(async (conn) => {
-        connection = conn;
-        return await connection.query(
-            `SELECT username FROM Users WHERE username="${username}";`,
-            (error, results, fields) => {
-                if (error) throw error;
-            }).then((res) => {
-                connection.end(function(err) {});
-                return console.log("res", res);
-            });  
+    });
+    connection.query("USE library;", (err) => {
+        if (err) throw err;
+    });
+    if (id) {
+        connection.query(`SELECT * FROM Users WHERE user_id="${id}";`, (err, res) => {
+            if (err) cb(error, null);
+            user = {
+                username: res[0].username,
+                id,
+                password: res[0].password,
+                role: res[0].role
+            }
+            return cb(null, user);
+        });
+    }
+    if (!id && username) {
+        connection.query(`SELECT * FROM Users WHERE username="${username}";`, (err, res) => {
+            if (err) cb(err, null);
+            user = {
+                username,
+                id: res[0].user_id,
+                password: res[0].password,
+                role: res[0].role
+            }
+            return cb(null, user);
+        });
+    }
+    connection.end();
+}
+
+const verifyPassword = (username, password, cb) => {
+    getUser(null, username, (err, user) => {
+        if (err) return cb(err, null);
+        if (user && user.password === password) return cb(null, user);
+        else return cb(null, null);
     })
 }
 
-async function checkUserExists(username) {
-    let connection;
-    return mysqlAsync.createConnection({
-        host: "localhost",
-        user: "devuser",
-        password: mysqlPassword
-    }).then(async (conn) => {
-        connection = conn;
-        connection.query(
-            "USE library;", (error) => {
-                if (error) throw error;
-            })
-        return;
-    }).then(async () => {
-        return await connection.query(
-            `SELECT username FROM Users WHERE username="${username}";`
-    ).then(async (res) => {
-        connection.end(function (err) { });
-        if (res.length === 0) {
-            return false;
-        }
-        return true;
-        });
-    })
-}
-
-async function verifyPassword(username, password) {
-    let connection;
-    return mysqlAsync.createConnection({
-        host: "localhost",
-        user: "devuser",
-        password: mysqlPassword
-    }).then(async (conn) => {
-        connection = conn;
-        connection.query(
-            "USE library;", (error) => {
-                if (error) throw error;
-            })
-        return;
-    }).then(async () => {
-        return await connection.query(
-            `SELECT password FROM Users WHERE username="${username}";`
-    ).then(async (res) => {
-        connection.end(function (err) { });
-        if (res !== password) {
-            return false;
-        }
-        return true;
-        });
-    })
-}
+// create new account
 
 const createUser = (newUser) => {
     const connection = mysql.createConnection({
@@ -93,7 +68,7 @@ const createUser = (newUser) => {
 }
 
 module.exports = {
+    getUser,
     verifyPassword,
-    createUser,
-    checkUserExists
+    createUser
 };
