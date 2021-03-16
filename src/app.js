@@ -24,15 +24,13 @@ passport.use(new LocalStrategy(
       });
 }));
 
-// // session handling setup
+// session handling setup
 passport.serializeUser((user, cb) => {
-  // console.log("user.id from serializeUser()", user.id);
   cb(null, user.id);
 });
 
 passport.deserializeUser((id, cb) => {
   getUser(id, null, (err, user) => {
-      // console.log("user object from deserializeUser(): ", user);  
       if (err) return cb("err with deserializeUser(): ", err);
       cb(null, user);
   });
@@ -74,7 +72,7 @@ app.get("/", (req, res) => {
 })
 
 app.get("/library", 
-    ensureLogin.ensureLoggedIn("/login-warning"),
+    ensureLogin.ensureLoggedIn("/login_warning"),
     (req, res) => { 
         res.render("library", { username: req.user.username }
     );
@@ -88,8 +86,8 @@ app.get("/admin", (req, res) => {
   res.render("admin"); 
 })
 
-app.get("/login-warning", (req, res) => {
-  res.render("login-warning"); 
+app.get("/login_warning", (req, res) => {
+  res.render("login_warning"); 
 })
 
 app.get("*", (req, res) => { 

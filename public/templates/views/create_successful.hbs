@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <title>Account Created</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="A library inventory service for book collectors.">
+    <meta name="author" content="Barnaby Thieme">
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <header>
+        <h1>Account Created</h1>
+    </header>
+
+    <nav>{{>nav}}</nav>
+
+    <main>
+
+    <p>Your account has been created!</p>
+
+    <p>Please log in to continue:</p>
+
+    <form id="login" method="post" action="/login">
+        <input type="text" name="username" id="username" placeholder="user name" required>
+        <br><br>
+        <input type="password" name="password" id="password" placeholder="password" required>
+        <br><br>
+        <input type="submit" id="loginButton" value="Log In">
+    </form>
+
+    </main>
+</body>
+
+</html>

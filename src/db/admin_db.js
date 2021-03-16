@@ -1,7 +1,6 @@
 "use strict";
 
 const mysql = require("mysql");
-const mysqlAsync = require("promise-mysql");
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 
 const deleteDb = () => {
@@ -12,9 +11,9 @@ const deleteDb = () => {
     });
     connection.query('DROP DATABASE IF EXISTS library;', (error, results, fields) => {
         if (error) throw error;
+        connection.end(function (err) { });
+        console.log("Database deleted!");
     });
-    connection.end(function(err) {});
-    console.log("Database deleted!");
 }
 
 const createDb = () => {
@@ -25,44 +24,51 @@ const createDb = () => {
     });
     connection.query("CREATE DATABASE IF NOT EXISTS library;", (error) => {
         if (error) throw error;
-    });
-    connection.query("USE library;", (error) => {
-        if (error) throw error;
-    });
-    connection.query(`CREATE TABLE IF NOT EXISTS Books 
-            (title VARCHAR(100), author_name_first VARCHAR(30), author_name_last VARCHAR(30), pub_date INT, 
-            pub VARCHAR(30), num_pages Int, description VARCHAR(200), book_id INT PRIMARY KEY AUTO_INCREMENT);`,
-        (error) => {
+        connection.query("USE library;", (error) => {
             if (error) throw error;
+            connection.query(`CREATE TABLE IF NOT EXISTS Books 
+                (title VARCHAR(100), 
+                author_name_first VARCHAR(30), 
+                author_name_last VARCHAR(30), 
+                pub_date INT, 
+                pub VARCHAR(30), 
+                num_pages Int, 
+                description VARCHAR(200), 
+                book_id INT PRIMARY KEY AUTO_INCREMENT);`,
+                (error) => {
+                    if (error) throw error;
+                    connection.query(`CREATE TABLE IF NOT EXISTS Users 
+                        (username VARCHAR(30), 
+                        password VARCHAR(30), 
+                        user_id INT PRIMARY KEY AUTO_INCREMENT, 
+                        role ENUM("user", "admin") );`,
+                        (error) => {
+                            if (error) throw error;
+                            connection.end(function (err) { });
+                            console.log("Database created!");
+                        });
+                });
         });
-    connection.query(`CREATE TABLE IF NOT EXISTS Users 
-        (username VARCHAR(30), password VARCHAR(30), user_id INT PRIMARY KEY AUTO_INCREMENT, role ENUM("user", "admin") );`,
-    (error) => {
-        if (error) throw error;
     });
-    connection.end(function(err) {});
-    console.log("Database created!");
 }
 
-async function checkDbExists() {
-    let connection;
-    return mysqlAsync.createConnection({
+const checkDbExists = (cb) => {     // cb() invoked on BOOL, true if db exists
+    const connection = mysql.createConnection({
         host: "localhost",
         user: "devuser",
         password: mysqlPassword
-    }).then(async (conn) => {
-        connection = conn;
-        return await connection.query(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = "library";`);
-    }).then((res) => {
+    });
+    connection.query(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA
+            WHERE SCHEMA_NAME = "library";`, 
+        (error, res) => {
+        if (error) throw error;
         connection.end()
-        let outcome = false;
-        if (res.length !== 0) outcome = true;
-        return outcome;
-    })
+        return cb(Boolean(res.length !== 0));
+    });
 }
 
 module.exports = {
-    createDb, 
+    createDb,
     deleteDb,
     checkDbExists
 };

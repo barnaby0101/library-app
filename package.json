@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.1",
     "connect-ensure-login": "^0.1.1",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
@@ -17,8 +18,7 @@
     "local": "^0.3.3",
     "mysql": "^2.18.1",
     "passport": "^0.4.1",
-    "passport-local": "^1.0.0",
-    "promise-mysql": "^5.0.3"
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "env-cmd": "^10.1.0",

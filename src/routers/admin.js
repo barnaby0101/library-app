@@ -21,10 +21,11 @@ router.post("/deleteDb", (req, res) => {
     res.status(200).send();
 })
 
-// does library exist
-router.get("/does_db_exist", async (req, res) => {
-    const result = await checkDbExists();
-    res.send(result);
+// does library exist   // TODO can I remove this endpoint and move this logic to the backend? 
+router.get("/does_db_exist", (req, res) => {
+    checkDbExists((exists) => {
+        res.send(exists);
+    });
 })
 
 module.exports = router;

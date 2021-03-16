@@ -2,14 +2,14 @@
 <html lang="en-US">
 
 <head>
-    <title>Bibliotech</title>
+    <title>Create an Account</title>
     <meta charset="UTF-8">
     <meta name="description" content="A library inventory service for book collectors.">
     <meta name="author" content="Barnaby Thieme">
     <link rel="stylesheet" type="text/css" href="../../css/style.css">
     <link rel="stylesheet" type="text/css" href="../../css/index.css">
     <link rel="stylesheet" type="text/css" href="../../css/jquery.toast.css">
-    <script src="../../js/create_account.js" defer></script>
+    {{!-- <script src="../../js/create_account.js" defer></script> --}}
     <script src="//code.jquery.com/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -20,24 +20,27 @@
 
 <body>
     <header>
-        <h1>Bibliotech</h1>
+        <h1>Create an Account</h1>
     </header>
 
     <nav>{{>nav}}</nav>
 
     <main>
-        <p>Welcome to Bibliotech, an online service for book lovers to easily track their collections. Please log in to
-            continue.</p>
+        <p>Welcome to Bibliotech, an online service for book lovers to easily track their collections.</p>
 
-        <form id="login" method="post" action="/login">
-            <input type="text" name="username" id="username" placeholder="user name" required>
+        <p>Please create a free account to get started!</p>
+        
+        <form id="createAccount" method="post" action="/user/create">
+            <input type="text" id="new-username" placeholder="user name" name="username">
             <br><br>
-            <input type="password" name="password" id="password" placeholder="password" required>
+            <input type="password" id="password" placeholder="password" name="password">
             <br><br>
-            <input type="submit" id="loginButton" value="Log In">
+            <input type="password" id="passwordConfirm" placeholder="confirm password" name="passwordConfirm">
+            <br><br>
+            <!--submit-->
+            <input type="submit" id="createAccountButton" value="Create Account">
         </form>
 
-        <p>If you are new here, please <a href="/user/create">create a free account</a> to get started!</p>
     </main>
 </body>
 

@@ -1,6 +1,13 @@
 "use strict";
 
+const path = require("path");
 const express = require("express");
+
+const axios = require("axios");
+const axiosInstance = axios.create({
+  baseURL: "localhost",
+  port: 3000
+})
 
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
@@ -26,18 +33,33 @@ router.use(passport.session());
 // routes
 
 router.post("/login",
-  passport.authenticate("local", { failureRedirect: 'login-warning' }),
+  passport.authenticate("local", { failureRedirect: 'login_warning' }),
   (req, res) => {
       res.render("library", { username: req.user.username });
 })
 
-router.post("/create_account", (req, res) => {  // TODO redo
-  const newUser = {
-    username: req.body.username,
-    password: req.body.password
-  }
-  createUser(newUser);
-  res.status(200).send();
+router.get("/user/create", (req, res) => {  // TODO is this still in use? 
+  res.render("create"); 
 })
+
+router.get("/create_successful", (req, res) => {
+  res.render("create_successful"); 
+})
+
+router.post("/user/create", (req, res) => {
+  const newUser = {
+      username: req.body.username,
+      password: req.body.password
+    };
+  createUser(newUser);
+  res.redirect("/create_successful");
+})
+
+router.get('/logout', (req, res) => {
+  req.logout();
+  res.render("index");
+})
+
+
 
 module.exports = router;

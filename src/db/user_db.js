@@ -13,6 +13,7 @@ const getUser = (id, username, cb) => {
     connection.query("USE library;", (err) => {
         if (err) throw err;
     });
+    if (!id && !username) throw err;
     if (id) {
         connection.query(`SELECT * FROM Users WHERE user_id="${id}";`, (err, res) => {
             if (err) cb(error, null);
@@ -28,6 +29,7 @@ const getUser = (id, username, cb) => {
     if (!id && username) {
         connection.query(`SELECT * FROM Users WHERE username="${username}";`, (err, res) => {
             if (err) cb(err, null);
+            if (res.length === 0) return cb(null, null);  // if no user found, return null
             user = {
                 username,
                 id: res[0].user_id,
@@ -48,8 +50,6 @@ const verifyPassword = (username, password, cb) => {
     })
 }
 
-// create new account
-
 const createUser = (newUser) => {
     const connection = mysql.createConnection({
         host: "localhost",
@@ -58,13 +58,12 @@ const createUser = (newUser) => {
     });
     connection.query("USE library;", (error) => {
         if (error) throw error;
+        connection.query(`INSERT INTO Users (username, password, role) 
+        VALUES ("${newUser.username}", "${newUser.password}", "admin");`, // TODO for now all users are admin
+            (error) => {
+                if (error) throw error;
+            });
     });
-    connection.query(`INSERT INTO Users (username, password, role) 
-            VALUES ("${newUser.username}", "${newUser.password}", "admin");`, // TODO for now all users are admin
-        (error, results, fields) => {
-            if (error) throw error;
-        });
-    connection.end()
 }
 
 module.exports = {
