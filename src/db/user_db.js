@@ -18,9 +18,10 @@ const getUser = (id, username, cb) => {
         connection.query(`SELECT * FROM Users WHERE user_id="${id}";`, (err, res) => {
             if (err) cb(error, null);
             user = {
-                username: res[0].username,
                 id,
-                password: res[0].password,
+                username: res[0].username,
+                firstName: res[0].first_name,
+                lastName: res[0].last_name,
                 role: res[0].role
             }
             return cb(null, user);
@@ -31,8 +32,10 @@ const getUser = (id, username, cb) => {
             if (err) cb(err, null);
             if (res.length === 0) return cb(null, null);  // if no user found, return null
             user = {
-                username,
                 id: res[0].user_id,
+                username,
+                firstName: res[0].first_name,
+                lastName: res[0].last_name,
                 password: res[0].password,
                 role: res[0].role
             }
@@ -58,8 +61,14 @@ const createUser = (newUser) => {
     });
     connection.query("USE library;", (error) => {
         if (error) throw error;
-        connection.query(`INSERT INTO Users (username, password, role) 
-        VALUES ("${newUser.username}", "${newUser.password}", "admin");`, // TODO for now all users are admin
+        connection.query(`INSERT INTO Users (username, first_name, last_name, password, role) 
+            VALUES (
+                "${newUser.username}",
+                "${newUser.firstName}",
+                "${newUser.lastName}",
+                "${newUser.password}",
+                "admin"
+            );`, // TODO for now all users are admin
             (error) => {
                 if (error) throw error;
             });

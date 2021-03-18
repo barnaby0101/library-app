@@ -26,26 +26,39 @@ const createDb = () => {
         if (error) throw error;
         connection.query("USE library;", (error) => {
             if (error) throw error;
-            connection.query(`CREATE TABLE IF NOT EXISTS Books 
-                (title VARCHAR(100), 
+            connection.query(`CREATE TABLE IF NOT EXISTS Books (
+                book_id INT PRIMARY KEY AUTO_INCREMENT,
+                title VARCHAR(100), 
                 author_name_first VARCHAR(30), 
                 author_name_last VARCHAR(30), 
-                pub_date INT, 
+                pub_year INT, 
                 pub VARCHAR(30), 
-                num_pages Int, 
-                description VARCHAR(200), 
-                book_id INT PRIMARY KEY AUTO_INCREMENT);`,
+                num_pages Int
+                );`,
                 (error) => {
                     if (error) throw error;
-                    connection.query(`CREATE TABLE IF NOT EXISTS Users 
-                        (username VARCHAR(30), 
+                    connection.query(`CREATE TABLE IF NOT EXISTS Users (
+                        user_id INT PRIMARY KEY AUTO_INCREMENT,
+                        username VARCHAR(30),
+                        first_name VARCHAR(30),
+                        last_name VARCHAR(30),
                         password VARCHAR(30), 
-                        user_id INT PRIMARY KEY AUTO_INCREMENT, 
-                        role ENUM("user", "admin") );`,
+                        role ENUM("user", "admin")
+                        );`,
                         (error) => {
                             if (error) throw error;
-                            connection.end(function (err) { });
-                            console.log("Database created!");
+                            connection.query(`CREATE TABLE IF NOT EXISTS Ownership (
+                                user_id INT,
+                                book_id INT,
+                                review VARCHAR(30),
+                                rating INT,
+                                PRIMARY KEY (user_id, book_id)
+                                );`,
+                                (error) => {
+                                    if (error) throw error;
+                                    connection.end();
+                                    console.log("Database created!");
+                                });
                         });
                 });
         });

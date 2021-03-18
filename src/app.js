@@ -13,6 +13,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const ensureLogin = require("connect-ensure-login");
 
 const { verifyPassword, getUser } = require("../src/db/user_db");
+const { getBooksForUser } = require("../src/db/book_db");
 
 // verifyPassword() is expected to return a user object or null
 passport.use(new LocalStrategy(
@@ -46,7 +47,7 @@ const viewsPath = path.join(__dirname, "../public/templates/views");
 const partialsPath = path.join(__dirname, "../public/templates/partials");
 
 // Handlebars engine and views
-app.set("view engine", "hbs");  // handlebars node plugin
+app.set("view engine", "hbs");
 app.set("views", viewsPath);
 hbs.registerPartials(partialsPath);
 
@@ -54,7 +55,7 @@ hbs.registerPartials(partialsPath);
 app.use(express.static(publicDirectoryPath));
 
 app.use(require("express-session")({
-  secret: "my secret", 
+  secret: "my secret", // TODO replace with actual secret
   resave: false,
   saveUninitialized: false
 }))
@@ -63,23 +64,40 @@ app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-
 // routes
 
 app.get("/", (req, res) => {
   res.render("index"); 
 })
 
-app.get("/library", 
-    ensureLogin.ensureLoggedIn("/login_warning"),
+app.post("/library", 
+  passport.authenticate("local", { failureRedirect: 'login_warning' }),
     (req, res) => { 
-        res.render("library", { username: req.user.username }
-    );
+      getBooksForUser(req.user, (err, userBooks) => {
+        if (err) console.log(err);
+        res.render("library", { 
+          reqUser: req.user,
+          userBooks,
+        });
+      });
 })
 
-app.get("/add", (req, res) => {
-  res.render("add"); 
+app.get("/library", 
+  ensureLogin.ensureLoggedIn("/login_warning"),
+    (req, res) => { 
+      getBooksForUser(req.user, (err, userBooks) => {
+        if (err) console.log(err);
+        res.render("library", { 
+          reqUser: req.user,
+          userBooks,
+        });
+      });
+})
+
+app.get("/add", 
+  ensureLogin.ensureLoggedIn("/login_warning"),
+  (req, res) => {
+    res.render("add", { reqUser: req.user }); 
 })
 
 app.get("/admin", (req, res) => {
