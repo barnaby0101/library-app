@@ -1,6 +1,7 @@
 "use strict";
 
 const mysql = require("mysql");
+const bcrypt = require('bcryptjs');
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 
 const getUser = (id, username, cb) => {
@@ -24,6 +25,7 @@ const getUser = (id, username, cb) => {
                 lastName: res[0].last_name,
                 role: res[0].role
             }
+            console.log("user from getUser()", user); // todo remove
             return cb(null, user);
         });
     }
@@ -48,8 +50,12 @@ const getUser = (id, username, cb) => {
 const verifyPassword = (username, password, cb) => {
     getUser(null, username, (err, user) => {
         if (err) return cb(err, null);
-        if (user && user.password === password) return cb(null, user);
-        else return cb(null, null);
+        if (!user) return cb(null, null);
+        bcrypt.compare(password, user.password, (err, res) => {
+            if (err) throw err;
+            if (res) return cb(null, user);
+            return cb(null, null);
+        })
     })
 }
 
@@ -59,20 +65,32 @@ const createUser = (newUser) => {
         user: "devuser",
         password: mysqlPassword
     });
-    connection.query("USE library;", (error) => {
-        if (error) throw error;
-        connection.query(`INSERT INTO Users (username, first_name, last_name, password, role) 
-            VALUES (
-                "${newUser.username}",
-                "${newUser.firstName}",
-                "${newUser.lastName}",
-                "${newUser.password}",
-                "admin"
-            );`, // TODO for now all users are admin
-            (error) => {
+    bcrypt.genSalt(10, (err, salt) => {
+        if (err) throw err;
+        bcrypt.hash(newUser.password, salt, (err, hashedPassword) => {
+            if (err) throw err;
+            connection.query("USE library;", (error) => {
                 if (error) throw error;
+                connection.query(`INSERT INTO Users (
+                        username,
+                        first_name,
+                        last_name,
+                        password,
+                        role
+                    ) 
+                    VALUES (
+                        "${newUser.username}",
+                        "${newUser.firstName}",
+                        "${newUser.lastName}",
+                        "${hashedPassword}",
+                        "admin"
+                    );`, // TODO for now all users are admin
+                    (error) => {
+                        if (error) throw error;
+                    });
             });
-    });
+        })
+    })
 }
 
 module.exports = {

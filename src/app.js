@@ -14,6 +14,7 @@ const ensureLogin = require("connect-ensure-login");
 
 const { verifyPassword, getUser } = require("../src/db/user_db");
 const { getBooksForUser } = require("../src/db/book_db");
+const sessionSecret = process.env.SESSION_SECRET;
 
 // verifyPassword() is expected to return a user object or null
 passport.use(new LocalStrategy(
@@ -55,7 +56,7 @@ hbs.registerPartials(partialsPath);
 app.use(express.static(publicDirectoryPath));
 
 app.use(require("express-session")({
-  secret: "my secret", // TODO replace with actual secret
+  secret: sessionSecret,
   resave: false,
   saveUninitialized: false
 }))

@@ -42,7 +42,7 @@ const createDb = () => {
                         username VARCHAR(30),
                         first_name VARCHAR(30),
                         last_name VARCHAR(30),
-                        password VARCHAR(30), 
+                        password VARCHAR(60), 
                         role ENUM("user", "admin")
                         );`,
                         (error) => {

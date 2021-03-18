@@ -10,6 +10,7 @@ const addBook = (book, user) => {
         user: "devuser",
         password: mysqlPassword
     });
+    console.log("user", user);
     connection.query("USE library;", (error) => {
         if (error) throw error;
         connection.query(`INSERT INTO Books (

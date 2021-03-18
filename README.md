@@ -2,14 +2,15 @@
 
 Bibliotech is a web app that allows users to create an account and add book information for their personal libraries. I created it from scratch as a project/demo application.
 
-**Status**: This project is currently in development. 
+**Status**: This project is currently in development.
 
 ## Some interesting features
 
 * Served with Express
-* Uses passport-local for session authentication
 * Pages are dynamically generated based on the logged-in user
-* Uses a 3NF MySQL backend
+* Uses a MySQL backend (3NF)
+* Uses passport-local for session authentication
+* Passwords are hashed and salted
 
 ## Design Comments
 
