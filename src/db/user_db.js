@@ -25,7 +25,6 @@ const getUser = (id, username, cb) => {
                 lastName: res[0].last_name,
                 role: res[0].role
             }
-            console.log("user from getUser()", user); // todo remove
             return cb(null, user);
         });
     }
@@ -65,6 +64,7 @@ const createUser = (newUser) => {
         user: "devuser",
         password: mysqlPassword
     });
+    newUser = sanitizeObject(newUser);
     bcrypt.genSalt(10, (err, salt) => {
         if (err) throw err;
         bcrypt.hash(newUser.password, salt, (err, hashedPassword) => {

@@ -18,7 +18,8 @@
     "local": "^0.3.3",
     "mysql": "^2.18.1",
     "passport": "^0.4.1",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "validator": "^13.5.2"
   },
   "devDependencies": {
     "env-cmd": "^10.1.0",

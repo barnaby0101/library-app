@@ -12,8 +12,8 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const ensureLogin = require("connect-ensure-login");
 
-const { verifyPassword, getUser } = require("../src/db/user_db");
 const { getBooksForUser } = require("../src/db/book_db");
+const { verifyPassword, getUser } = require("../src/db/user_db");
 const sessionSecret = process.env.SESSION_SECRET;
 
 // verifyPassword() is expected to return a user object or null
@@ -81,24 +81,6 @@ app.post("/library",
           userBooks,
         });
       });
-})
-
-app.get("/library", 
-  ensureLogin.ensureLoggedIn("/login_warning"),
-    (req, res) => { 
-      getBooksForUser(req.user, (err, userBooks) => {
-        if (err) console.log(err);
-        res.render("library", { 
-          reqUser: req.user,
-          userBooks,
-        });
-      });
-})
-
-app.get("/add", 
-  ensureLogin.ensureLoggedIn("/login_warning"),
-  (req, res) => {
-    res.render("add", { reqUser: req.user }); 
 })
 
 app.get("/admin", (req, res) => {

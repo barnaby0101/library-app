@@ -46,8 +46,6 @@ router.post("/book/add",
   (req, res) => {
     const book = req.body;
     const user = req.user;
-    console.log("req.user", req.user); // todo remove
-    console.log("req.body", req.body); // todo remove
     addBook(book, user);
     res.status(200).send();
 })
