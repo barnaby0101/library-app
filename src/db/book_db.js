@@ -1,16 +1,16 @@
 "use strict";
 
 const mysql = require("mysql");
-const { sanitizeObject, createTableFromArray } = require("../utils/utils");
+const { createTableFromArray } = require("../utils/utils");
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 
 const addBook = (book, user) => {
+    book = sanitizeObject(book);
     const connection = mysql.createConnection({
         host: "localhost",
         user: "devuser",
         password: mysqlPassword
     });
-    book = sanitizeObject(book);
     connection.query("USE library;", (error) => {
         if (error) throw error;
         connection.query(`INSERT INTO Books (

@@ -59,12 +59,12 @@ const verifyPassword = (username, password, cb) => {
 }
 
 const createUser = (newUser) => {
+    newUser = sanitizeObject(newUser);
     const connection = mysql.createConnection({
         host: "localhost",
         user: "devuser",
         password: mysqlPassword
     });
-    newUser = sanitizeObject(newUser);
     bcrypt.genSalt(10, (err, salt) => {
         if (err) throw err;
         bcrypt.hash(newUser.password, salt, (err, hashedPassword) => {

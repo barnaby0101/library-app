@@ -1,5 +1,10 @@
 "use strict";
 
+const sanitizeString = (string) => {
+    const validator = require("validator");
+    return validator.trim(validator.escape(string));
+}
+
 const sanitizeObject = (object) => {
     const validator = require("validator");
     Object.keys(object).forEach((key) => {
@@ -24,6 +29,7 @@ const createTableFromArray = (array) => {
 }
 
 module.exports = {
+    sanitizeString,
     sanitizeObject,
     createTableFromArray
 };

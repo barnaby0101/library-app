@@ -14,16 +14,19 @@ const ensureLogin = require("connect-ensure-login");
 
 const { getBooksForUser } = require("../src/db/book_db");
 const { verifyPassword, getUser } = require("../src/db/user_db");
+const { sanitizeString } = require("../src/utils/utils");
 const sessionSecret = process.env.SESSION_SECRET;
 
 // verifyPassword() is expected to return a user object or null
 passport.use(new LocalStrategy(
   (username, password, done) => {
-      verifyPassword(username, password, (err, user) => {
-          if (err) { return done(err) };
-          if (!user) { return done(null, false); };
-          return done(null, user);
-      });
+    username = sanitizeString(username);
+    password = sanitizeString(password);
+    verifyPassword(username, password, (err, user) => {
+        if (err) { return done(err) };
+        if (!user) { return done(null, false); };
+        return done(null, user);
+    });
 }));
 
 // session handling setup
@@ -89,6 +92,11 @@ app.get("/admin", (req, res) => {
 
 app.get("/login_warning", (req, res) => {
   res.render("login_warning"); 
+})
+
+app.get('/logout', (req, res) => {
+  req.logout();
+  res.render("index");
 })
 
 app.get("*", (req, res) => { 
