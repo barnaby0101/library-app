@@ -1,7 +1,7 @@
 "use strict";
 
 const mysql = require("mysql");
-const { createTableFromArray } = require("../utils/utils");
+const { sanitizeObject, createTableFromArray } = require("../utils/utils");
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 
 const addBook = (book, user) => {

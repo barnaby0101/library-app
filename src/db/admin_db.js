@@ -31,9 +31,9 @@ const createDb = () => {
                 title VARCHAR(100), 
                 author_name_first VARCHAR(30), 
                 author_name_last VARCHAR(30), 
-                pub_year INT, 
+                pub_year VARCHAR(10), 
                 pub VARCHAR(30), 
-                num_pages Int
+                num_pages VARCHAR(8)
                 );`,
                 (error) => {
                     if (error) throw error;
