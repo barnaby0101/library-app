@@ -15,3 +15,21 @@ $("#submitButton").click((e) => {
         }
     });
 })
+ 
+$("#submitButtonIsbn").click((e) => {
+    e.preventDefault();	
+    const isbn = $("#addBookIsbn").serializeArray();
+    $.ajax({
+        url: "/book/add/isbn",
+        type: "POST",
+        data: isbn,
+        cache: false,
+        success: () => {
+            $.toast({
+                heading: "Success!",
+                text: "Your book has been added to your library.",
+                position: "top-right"
+            })
+        }
+    });
+})

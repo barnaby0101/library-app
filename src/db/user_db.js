@@ -2,6 +2,7 @@
 
 const mysql = require("mysql");
 const bcrypt = require('bcryptjs');
+const { sanitizeObject } = require("../utils/utils");
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 
 const getUser = (id, username, cb) => {

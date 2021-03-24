@@ -24,6 +24,17 @@
 
     <main>
 
+        <p>Enter your book's ISBN to add its information automatically:</p>
+
+        <form id="addBookIsbn" method="post" action="/">
+            <input type="isbn" id="isbn" placeholder="ISBN" name="isbn" required>
+            <br><br>
+            <!--submit--> 
+            <button type="button" id="submitButtonIsbn" value="submitButtonIsbn">Submit</button>
+        </form>
+
+        <p>Or you can enter your book manually:</p>
+
         <form id="addBook" method="post" action="/">
             <input type="text" id="title" placeholder="Title" name="title" required>
             <br><br>
@@ -31,11 +42,11 @@
             <br><br>
             <input type="text" id="authorLastName" placeholder="Author's Last Name" name="authorLastName" required>
             <br><br>
-            <input type="number" id="pubYear" placeholder="Year of Publication" name="pubYear">
+            <input type="text" id="pubYear" placeholder="Year of Publication" name="pubYear">
             <br><br>
             <input type="text" id="pub" placeholder="Publisher" name="pub">
             <br><br>
-            <input type="number" id="numPages" placeholder="Number of Pages" name="numPages">
+            <input type="text" id="numPages" placeholder="Number of Pages" name="numPages">
             <br><br>
             <input type="text" id="desc" placeholder="Description" name="desc">
             <br><br>

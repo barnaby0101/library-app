@@ -6,8 +6,8 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const ensureLogin = require("connect-ensure-login");
 
-const { addBook } = require("../db/book_db");
-const { getBooksForUser } = require("../db/book_db");
+const { addBook, getBooksForUser } = require("../db/book_db");
+const { getBookInfo } = require("../../src/utils/utils");
 const sessionSecret = process.env.SESSION_SECRET;
 
 const router = new express.Router();
@@ -47,6 +47,17 @@ router.post("/book/add",
     const book = req.body;
     const user = req.user;
     addBook(book, user);
+    res.status(200).send();
+})
+
+router.post("/book/add/isbn", 
+  (req, res) => {
+    const isbn = req.body.isbn;
+    const user = req.user;
+    getBookInfo(isbn, (err, book) => {
+      if (err) throw err;
+      addBook(book, user);
+    })
     res.status(200).send();
 })
 
