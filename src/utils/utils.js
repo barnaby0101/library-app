@@ -8,7 +8,9 @@ const sanitizeString = (string) => {
 const sanitizeObject = (object) => {
     const validator = require("validator");
     Object.keys(object).forEach((key) => {
-        object[key] = validator.trim(validator.escape(object[key]));
+        if (object[key]) {   // ignore nulls
+            object[key] = validator.trim(validator.escape(object[key]));
+        }
     })
     return object;
 }

@@ -1,3 +1,5 @@
+"use strict";
+
 // jQuery toast plugin created by Kamran Ahmed copyright MIT license 2015
 if ( typeof Object.create !== 'function' ) {
     Object.create = function( obj ) {

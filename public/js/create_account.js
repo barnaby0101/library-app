@@ -14,7 +14,7 @@ $("#createAccountButton").click((e) => {
         data: dataToSend,
         cache: false,
         success: () => {
-            window.location.href="/create_successful"
+            window.location.href="/user/create_successful"
         }
     });
 })

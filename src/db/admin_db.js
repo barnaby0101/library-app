@@ -11,7 +11,7 @@ const deleteDb = () => {
     });
     connection.query('DROP DATABASE IF EXISTS library;', (error, results, fields) => {
         if (error) throw error;
-        connection.end(function (err) { });
+        connection.end();
         console.log("Database deleted!");
     });
 }

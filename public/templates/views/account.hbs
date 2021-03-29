@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <title>Modify or Delete Account</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="A library inventory service for book collectors.">
+    <meta name="author" content="Barnaby Thieme">
+    <link rel="stylesheet" type="text/css" href="../../css/style.css">
+    <link rel="stylesheet" type="text/css" href="../../css/index.css">
+    <link rel="stylesheet" type="text/css" href="../../css/jquery.toast.css">
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../../js/jquery.toast.js" defer></script>
+    <script src="../../js/user.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="#" />
+</head>
+
+<body>
+    <header>
+        <h1>Modify or Delete Account</h1>
+    </header>
+
+    <nav>{{>nav}}</nav>
+
+    <main>
+        
+        <h2>Your Account</h2>
+
+        <table id="account">
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>User Name</th>
+            </tr>
+            <tr>
+                <td>{{reqUser.firstName}}</td>
+                <td>{{reqUser.lastName}}</td>
+                <td>{{reqUser.username}}</td>
+            </tr>
+        </table>
+
+        <h2>Update Account</h2>
+        
+        <form id="updateAccount" method="post" action="/user/update">
+        <p>User Information:</p>
+            <input type="text" id="username" placeholder="user name" name="username">
+            <br><br>
+            <input type="text" id="firstName" placeholder="first name" name="firstName">
+            <br><br>
+            <input type="text" id="lastName" placeholder="last name" name="lastName">
+            <br><br>
+        <p>Password:</p>
+            <input type="password" id="password" placeholder="password" name="password">
+            <br><br>
+            <input type="password" id="passwordConfirm" placeholder="confirm password" name="passwordConfirm">
+            <br><br>
+            <!--submit-->
+            <input type="submit" id="updateAccountButton" value="Update Account">
+        </form>
+{{!-- 
+        <h2>Change Password</h2>
+
+        <form id="changePassword" method="post" action="/user/update" onsubmit="return checkPasswordMatch();">
+
+            <!--submit-->
+            <input type="submit" id="updateAccountButton" value="Update Account">
+        </form> --}}
+
+        <h2>Delete Account</h2>
+
+        <form action="/user/delete" method="post" onsubmit="return confirm('Are you sure you want to delete your account? Your library will be permanently deleted.');">
+            <input type="submit" id="deleteAccountButton" value="Delete Account">
+        </form>
+
+    </main>
+</body>
+
+</html>

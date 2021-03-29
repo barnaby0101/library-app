@@ -15,6 +15,7 @@ const ensureLogin = require("connect-ensure-login");
 const { getBooksForUser } = require("../src/db/book_db");
 const { verifyPassword, getUser } = require("../src/db/user_db");
 const { sanitizeString } = require("../src/utils/utils");
+const { RSA_NO_PADDING } = require("constants");
 const sessionSecret = process.env.SESSION_SECRET;
 
 // verifyPassword() is expected to return a user object or null
@@ -86,8 +87,12 @@ app.post("/library",
       });
 })
 
-app.get("/admin", (req, res) => {
-  res.render("admin"); 
+app.get("/admin", 
+  ensureLogin.ensureLoggedIn("/login_warning"),
+  (req, res) => {
+    // must be admin to access
+    if (req.user.role !== "admin") res.render("404");
+    res.render("admin"); 
 })
 
 app.get("/login_warning", (req, res) => {

@@ -1,3 +1,5 @@
+"use strict";
+
 $("#submitButton").click((e) => {
     e.preventDefault();	
     const dataToSend = $("#addBook").serializeArray();

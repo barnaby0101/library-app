@@ -94,8 +94,129 @@ const createUser = (newUser) => {
     })
 }
 
+const deleteUser = (userId) => {
+    const connection = mysql.createConnection({
+        host: "localhost",
+        user: "devuser",
+        password: mysqlPassword
+    });
+    connection.query("USE library;", (error) => {
+        if (error) throw error;
+        connection.query(`DELETE FROM Users 
+                WHERE user_id=${userId}
+            ;`,
+            (error) => {
+                if (error) throw error;
+                connection.query(`DELETE FROM Ownership 
+                    WHERE user_id=${userId}
+                ;`,
+                    (error) => {
+                        if (error) throw error;
+                    });
+            });
+    });
+}
+
+const updateUser = (update) => {
+    update = sanitizeObject(update);
+    const connection = mysql.createConnection({
+        host: "localhost",
+        user: "devuser",
+        password: mysqlPassword
+    });
+    connection.query("USE library;", (error) => {
+        if (error) throw `USE library error: ${error}`;
+        if (update.username) {
+            connection.query(`UPDATE Users 
+                SET username = "${update.username}"
+                WHERE user_id = ${update.userId}
+            ;`, (error, res) => { if (error) throw `Update username error: ${error}`; }
+            )};
+        if (update.firstName) {
+            connection.query(`UPDATE Users 
+            SET first_name = "${update.firstName}"
+            WHERE user_id = ${update.userId}
+            ;`, (error) => { if (error) throw `Update firstName error: ${error}`; }
+        )};
+        if (update.lastName) {
+            connection.query(`UPDATE Users 
+            SET last_name = "${update.lastName}"
+            WHERE user_id = ${update.userId}
+            ;`, (error) => { if (error) throw `Update lastName error: ${error}`; }
+        )};
+        if (update.password) {
+            bcrypt.genSalt(10, (error, salt) => {
+                if (error) throw error;
+                bcrypt.hash(update.password, salt, (error, hashedPassword) => {
+                    if (error) throw `Update password error: ${error}`;
+                    connection.query(`UPDATE Users 
+                        SET password = "${hashedPassword}"
+                        WHERE user_id = ${update.userId}
+                    ;`);
+                });
+            });
+        }
+        // connection.end();
+    });
+}
+
+// const updateUser = (update) => {
+//     update = sanitizeObject(update);
+//     const connection = mysql.createConnection({
+//         host: "localhost",
+//         user: "devuser",
+//         password: mysqlPassword
+//     });
+//     connection.query("USE library;", (error) => {
+//         if (error) throw `USE library error: ${error}`;
+//         if (update.username) {
+//             connection.query(`UPDATE Users 
+//                 SET username = "${update.username}"
+//                 WHERE user_id = ${update.userId}
+//             ;`,
+//                 (error, res) => {
+//                     console.log("update: ", update); // todo remove
+//                     if (error) throw `Update username error: ${error}`;
+//                     if (update.firstName) {
+//                         connection.query(`UPDATE Users 
+//                         SET first_name = "${update.firstName}"
+//                         WHERE user_id = ${update.userId}
+//                     ;`,
+//                         (error) => {
+//                             if (error) throw `Update firstName error: ${error}`;
+//                             if (update.lastName) {
+//                                 connection.query(`UPDATE Users 
+//                                 SET last_name = "${update.lastName}"
+//                                 WHERE user_id = ${update.userId}
+//                             ;`,
+//                                 (error) => {
+//                                     if (error) throw `Update lastName error: ${error}`;
+//                                     if (update.password) {
+//                                         bcrypt.genSalt(10, (error, salt) => {
+//                                             if (error) throw error;
+//                                             bcrypt.hash(update.password, salt, (error, hashedPassword) => {
+//                                                 if (error) throw `Update password error: ${error}`;
+//                                                 connection.query(`UPDATE Users 
+//                                                     SET password = "${hashedPassword}"
+//                                                     WHERE user_id = ${update.userId}
+//                                                 ;`);
+//                                             });
+//                                         });
+//                                     }
+//                                     connection.end();
+//                                 }
+//                             );}
+//                         }
+//                     );}
+//                 }
+//             );}
+//     })
+// }
+ 
 module.exports = {
     getUser,
     verifyPassword,
-    createUser
+    createUser,
+    deleteUser,
+    updateUser
 };
