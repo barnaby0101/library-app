@@ -7,9 +7,6 @@
     <meta name="description" content="A library inventory service for book collectors.">
     <meta name="author" content="Barnaby Thieme">
     <link rel="stylesheet" type="text/css" href="../css/style.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="#" />
 </head>
@@ -22,7 +19,13 @@
     <nav>{{>nav}}</nav>
 
     <main>
+        {{#if reqUser.firstName}}
         <p>Welcome to your library page, {{reqUser.firstName}}. </p>
+        {{/if}}
+
+        {{#unless reqUser.firstName}}
+        <p>Welcome to your library page. </p>
+        {{/unless}}
     </main>
 
     <div id="library">

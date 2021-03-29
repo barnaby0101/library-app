@@ -36,7 +36,7 @@ router.get("/library",
 
 // add book
 
-router.get("/add", 
+router.get("/book/add", 
   ensureLogin.ensureLoggedIn("/login_warning"),
   (req, res) => {
     res.render("add", { reqUser: req.user }); 
@@ -59,12 +59,6 @@ router.post("/book/add/isbn",
       addBook(book, user);
     })
     res.status(200).send();
-})
-
-router.get("/book", (req, res) => {
-    res.render("book", {
-      title: "Ulysses"
-    }); 
 })
 
 module.exports = router;

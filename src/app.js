@@ -15,7 +15,6 @@ const ensureLogin = require("connect-ensure-login");
 const { getBooksForUser } = require("../src/db/book_db");
 const { verifyPassword, getUser } = require("../src/db/user_db");
 const { sanitizeString } = require("../src/utils/utils");
-const { RSA_NO_PADDING } = require("constants");
 const sessionSecret = process.env.SESSION_SECRET;
 
 // verifyPassword() is expected to return a user object or null

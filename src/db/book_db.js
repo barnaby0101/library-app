@@ -12,7 +12,7 @@ const addBook = (book, user) => {
         password: mysqlPassword
     });
     connection.query("USE library;", (error) => {
-        if (error) throw error;
+        if (error) throw `Error selecting Library: ${error}`;
         connection.query(`INSERT INTO Books (
             title,
             author_name_first,
@@ -28,10 +28,10 @@ const addBook = (book, user) => {
             "${book.pub}",
             "${book.numPages}"
         );`,
-            (error, res) => {
-                if (error) throw error;
+            (error) => {
+                if (error) throw `Error adding book to Books table: ${error}`;
                 connection.query(`SELECT * FROM Books WHERE title="${book.title}";`, (error, res) => {
-                    if (error) throw error;
+                    if (error) throw `Error retrieving book: ${error}`;
                     book = JSON.parse(JSON.stringify(res))[0];
                     connection.query(`INSERT INTO Ownership (
                         user_id,
@@ -40,7 +40,7 @@ const addBook = (book, user) => {
                         "${user.id}",
                         "${book.book_id}"
                     );`, (error) => {
-                        if (error) throw error;
+                        if (error) throw `Error adding Ownership record: ${error}`;
                         connection.end();
                         console.log("Book Added!");
                     })
