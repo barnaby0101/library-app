@@ -4,7 +4,7 @@ const mysql = require("mysql");
 const { sanitizeObject, createTableFromArray } = require("../utils/utils");
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 
-const addBook = (book, user) => {
+const addBook = (book, user, cb) => {
     book = sanitizeObject(book);
     const connection = mysql.createConnection({
         host: "localhost",
@@ -29,9 +29,15 @@ const addBook = (book, user) => {
             "${book.numPages}"
         );`,
             (error) => {
-                if (error) throw `Error adding book to Books table: ${error}`;
+                if (error) {
+                    console.log(`Error adding book to Books table: ${error}`);
+                    cb(error, null);
+                }
                 connection.query(`SELECT * FROM Books WHERE title="${book.title}";`, (error, res) => {
-                    if (error) throw `Error retrieving book: ${error}`;
+                    if (error) {
+                        console.log(`Error retrieving book: ${error}`);
+                        cb(error, null);
+                    }
                     book = JSON.parse(JSON.stringify(res))[0];
                     connection.query(`INSERT INTO Ownership (
                         user_id,
@@ -40,9 +46,12 @@ const addBook = (book, user) => {
                         "${user.id}",
                         "${book.book_id}"
                     );`, (error) => {
-                        if (error) throw `Error adding Ownership record: ${error}`;
+                        if (error) {
+                            console.log(`Error adding Ownership record: ${error}`);
+                            cb(error, null);
+                        }
                         connection.end();
-                        console.log("Book Added!");
+                        cb(null, true);
                     })
                 })
             });
