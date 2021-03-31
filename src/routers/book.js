@@ -29,7 +29,7 @@ router.get("/library",
         if (err) throw `Error retrieving user's books: ${err}`;
         res.render("library", { 
           reqUser: req.user,
-          userBooks,
+          userBooks
         });
       });
 })
@@ -48,17 +48,6 @@ router.get("/book/add_result",
     res.render("add_result", { reqUser: req.user }); 
 })
 
-router.post("/book/add", 
-  (req, res) => {
-    const book = req.body;
-    const user = req.user;
-    addBook(book, user, (err, success) => {
-      if (err) res.render("add_result", { result: "Sorry, something went wrong with our service."});
-      res.render("add_result", { result: "Your book has been added!"});
-    });
-    
-})
-
 router.post("/book/add/isbn", 
   (req, res) => {
     const isbn = req.body.isbn;
@@ -70,13 +59,27 @@ router.post("/book/add/isbn",
       }
       addBook(book, user, (err, success) => {
         if (err) {
-          if (/ER_DUP_ENTRY/.test(err)) {
-            return res.render("add_result", { result: "It looks like that book is already in your library!"});
-          } else return res.render("add_result", { result: "Sorry, something went wrong with our library catalog. Please try again later."});
-        }
-        res.render("add_result", { result: "Your book has been added!"});
+          if (err.code === "ER_DUP_ENTRY") {
+            return res.render("add_result", { result: "It looks like that book is already in your library!"});;
+          } 
+          return res.render("add_result", { result: "Sorry, something went wrong with our library catalog. Please try again later."});
+        } 
+        res.redirect(303, "/library?addSuccess=true"); 
       });
     })
+})
+
+router.post("/book/add", 
+  (req, res) => {
+    const book = req.body;
+    const user = req.user;
+    addBook(book, user, (err, success) => {
+      if (err) {
+        if (/ER_DUP_ENTRY/.test(err)) { return res.render("add_result", { result: "It looks like that book is already in your library!"}); } 
+        res.render("add_result", { result: "Sorry, something went wrong with our service."});
+      }
+      res.redirect(303, "/library?addSuccess=true"); 
+    });  
 })
 
 module.exports = router;

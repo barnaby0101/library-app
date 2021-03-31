@@ -7,7 +7,11 @@
     <meta name="description" content="A library inventory service for book collectors.">
     <meta name="author" content="Barnaby Thieme">
     <link rel="stylesheet" type="text/css" href="../css/style.css">
+    <link rel="stylesheet" type="text/css" href="../css/jquery.toast.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../js/jquery.toast.js"></script>
+    <script src="../../js/library.js"></script>
     <link rel="shortcut icon" href="#" />
 </head>
 
@@ -18,20 +22,25 @@
 
     <nav>{{>nav}}</nav>
 
-    <main>
+    <main>     
         {{#if reqUser.firstName}}
-        <p>Welcome to your library page, {{reqUser.firstName}}. </p>
+            <p>Welcome to your library page, {{reqUser.firstName}}.</p>
         {{/if}}
 
         {{#unless reqUser.firstName}}
-        <p>Welcome to your library page. </p>
+            <p>Welcome to your library page.</p>
         {{/unless}}
     </main>
 
     <div id="library">
-        {{{ userBooks }}}
-    </div>
+        {{#if userBooks}}
+            {{{ userBooks }}}
+        {{/if}}
 
+        {{#unless userBooks}}
+            <p>To get started, <a href="/book/add">add some books</a> to your collection!</p>
+        {{/unless}}
+    </div>
 </body>
 
 </html>

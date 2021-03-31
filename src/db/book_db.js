@@ -31,12 +31,12 @@ const addBook = (book, user, cb) => {
             (error) => {
                 if (error) {
                     console.log(`Error adding book to Books table: ${error}`);
-                    cb(error, null);
+                    return cb(error, null);
                 }
                 connection.query(`SELECT * FROM Books WHERE title="${book.title}";`, (error, res) => {
                     if (error) {
                         console.log(`Error retrieving book: ${error}`);
-                        cb(error, null);
+                        return cb(error, null);
                     }
                     book = JSON.parse(JSON.stringify(res))[0];
                     connection.query(`INSERT INTO Ownership (
@@ -48,10 +48,10 @@ const addBook = (book, user, cb) => {
                     );`, (error) => {
                         if (error) {
                             console.log(`Error adding Ownership record: ${error}`);
-                            cb(error, null);
+                            return cb(error, null);
                         }
                         connection.end();
-                        cb(null, true);
+                        return cb(null, true);
                     })
                 })
             });
@@ -66,21 +66,22 @@ const getBooksForUser = (user, cb) => {
         password: mysqlPassword
     });
     connection.query("USE library;", (error) => { 
-        if (error) cb(error, null);
+        if (error) return cb(error, null);
         connection.query(`CREATE TEMPORARY TABLE UsersBooks
                 SELECT * FROM OWNERSHIP 
                 WHERE user_id = ${user.id};`
             , (error) => {
-            if (error) cb(error, null);
+            if (error) return cb(error, null);
             connection.query(`Select title, author_name_first,
                     author_name_last, pub_year FROM Books
                     INNER JOIN UsersBooks
                     ON Books.book_id = UsersBooks.book_id
                     ;`, (error, result) => {
-                if (error) cb(error, null);
+                if (error) return cb(error, null);
                 const books = JSON.parse(JSON.stringify(result));
+                if (books.length === 0) { return cb(null, null );}
                 const booksTable = createTableFromArray(books);
-                cb(null, booksTable);
+                return cb(null, booksTable);
                 connection.end();
             })
         })
