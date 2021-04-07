@@ -9,9 +9,8 @@ function GetURLParameter(sParam) {
     }
 }
 
-const bookAdded = GetURLParameter("addSuccess");
-
 $( document ).ready(() => {
+    const bookAdded = GetURLParameter("addSuccess");
     if (bookAdded) {
         $.toast({
             heading: "Success!",

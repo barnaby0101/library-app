@@ -7,7 +7,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const ensureLogin = require("connect-ensure-login");
 
 const { addBook, getBooksForUser } = require("../db/book_db");
-const { getBookInfo } = require("../../src/utils/utils");
+const { getBookInfo } = require("../../src/utils/googlebooks");
 const sessionSecret = process.env.SESSION_SECRET;
 
 const router = new express.Router();
@@ -59,8 +59,8 @@ router.post("/book/add/isbn",
       }
       addBook(book, user, (err, success) => {
         if (err) {
-          if (err.code === "ER_DUP_ENTRY") {
-            return res.render("add_result", { result: "It looks like that book is already in your library!"});;
+          if (err === "duplicate") { 
+            return res.render("add_result", { result: "It looks like that book is already in your library!"}); 
           } 
           return res.render("add_result", { result: "Sorry, something went wrong with our library catalog. Please try again later."});
         } 
@@ -75,7 +75,9 @@ router.post("/book/add",
     const user = req.user;
     addBook(book, user, (err, success) => {
       if (err) {
-        if (/ER_DUP_ENTRY/.test(err)) { return res.render("add_result", { result: "It looks like that book is already in your library!"}); } 
+        if (err === "duplicate") { 
+          return res.render("add_result", { result: "It looks like that book is already in your library!"}); 
+        } 
         res.render("add_result", { result: "Sorry, something went wrong with our service."});
       }
       res.redirect(303, "/library?addSuccess=true"); 

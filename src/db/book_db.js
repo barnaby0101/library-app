@@ -12,7 +12,55 @@ const addBook = (book, user, cb) => {
         password: mysqlPassword
     });
     connection.query("USE library;", (error) => {
-        if (error) throw `Error selecting Library: ${error}`;
+        if (error) {
+            console.log(`Error selecting Library: ${error}`);
+            return cb(error, null);
+        }
+        // check if book already exists in library
+        connection.query(`SELECT * FROM Books 
+                WHERE title="${book.title}"
+                AND author_name_first="${book.authorFirstName}"
+                AND author_name_last="${book.authorLastName}"
+            ;`, (error, res) => {
+                if (error) {
+                    console.log(`Error checking if book exists in DB: ${error}`);
+                    return cb(error, null);
+                }
+                if (res.length !== 0) {
+                    const bookId = JSON.parse(JSON.stringify(res))[0].book_id;
+                    // book exists, check if current user already owns it
+                    connection.query(`SELECT * FROM Ownership 
+                            WHERE user_id="${user.id}"
+                            AND book_id="${bookId}"
+                        ;`, (error, res) => {
+                            if (error) {
+                                console.log(`Error checking if user ownership record already exists: ${error}`);
+                                return cb(error, null);
+                            }
+                            if (res.length !== 0) {
+                                return cb("duplicate", null);
+                            } else {
+                                // book exists in library, but we need to add an ownership record for this user            
+                                connection.query(`INSERT INTO Ownership (
+                                    user_id,
+                                    book_id
+                                ) VALUES (
+                                    "${user.id}",
+                                    "${bookId}"
+                                );`, (error) => {
+                                    if (error) {
+                                        console.log(`Error adding Ownership record: ${error}`);
+                                        return cb(error, null);
+                                    }
+                                    connection.end();
+                                    return cb(null, true);
+                                })
+                            }
+                        }
+                    )
+            return;
+        }
+        // book does not exist, add book and ownership record
         connection.query(`INSERT INTO Books (
             title,
             author_name_first,
@@ -33,12 +81,14 @@ const addBook = (book, user, cb) => {
                     console.log(`Error adding book to Books table: ${error}`);
                     return cb(error, null);
                 }
+                // read the newly-added book back out to get the db-generated book_id
                 connection.query(`SELECT * FROM Books WHERE title="${book.title}";`, (error, res) => {
                     if (error) {
                         console.log(`Error retrieving book: ${error}`);
                         return cb(error, null);
                     }
                     book = JSON.parse(JSON.stringify(res))[0];
+                    // add ownership record for new entry
                     connection.query(`INSERT INTO Ownership (
                         user_id,
                         book_id
@@ -55,8 +105,13 @@ const addBook = (book, user, cb) => {
                     })
                 })
             });
-    });
+        });
+    })
 }
+
+
+
+
 
 // returns an HTML table of the logged-in user's books
 const getBooksForUser = (user, cb) => {
