@@ -17,6 +17,7 @@ const getBookInfo = (isbn, cb) => {
             const authorLastName = authorArray[authorArray.length-1];
             const pubYear = book.publishedDate.split("-")[0];
             const numPages = book.pageCount.toString();
+            const imgUrl = book.imageLinks.thumbnail;
 
             cb(null, {
                 title: book.title,
@@ -24,7 +25,8 @@ const getBookInfo = (isbn, cb) => {
                 authorLastName,
                 pubYear,
                 pub: "-",
-                numPages
+                numPages,
+                imgUrl
             });
         }
     })

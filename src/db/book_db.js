@@ -1,11 +1,13 @@
 "use strict";
 
 const mysql = require("mysql");
-const { sanitizeObject, createTableFromArray } = require("../utils/utils");
+const { unescape } = require("validator");
+const { sanitizeObject } = require("../utils/utils");
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 
 const addBook = (book, user, cb) => {
     book = sanitizeObject(book);
+    book.imgUrl = unescape(book.imgUrl);
     const connection = mysql.createConnection({
         host: "localhost",
         user: "devuser",
@@ -38,9 +40,10 @@ const addBook = (book, user, cb) => {
                                 return cb(error, null);
                             }
                             if (res.length !== 0) {
+                                // book exists and user already owns
                                 return cb("duplicate", null);
                             } else {
-                                // book exists in library, but we need to add an ownership record for this user            
+                                // book exists but no ownership record
                                 connection.query(`INSERT INTO Ownership (
                                     user_id,
                                     book_id
@@ -67,14 +70,16 @@ const addBook = (book, user, cb) => {
             author_name_last,
             pub_year,
             pub,
-            num_pages
+            num_pages,
+            imgUrl
         ) VALUES (
             "${book.title}",
             "${book.authorFirstName}",
             "${book.authorLastName}",
             "${book.pubYear}",
             "${book.pub}",
-            "${book.numPages}"
+            "${book.numPages}",
+            "${book.imgUrl}"
         );`,
             (error) => {
                 if (error) {
@@ -109,9 +114,26 @@ const addBook = (book, user, cb) => {
     })
 }
 
-
-
-
+const getBookById = (id, cb) => {
+    const connection = mysql.createConnection({
+        host: "localhost",
+        user: "devuser",
+        password: mysqlPassword
+    });
+    connection.query("USE library;", (error) => { 
+        if (error) return cb(error, null);
+        connection.query(`SELECT title, author_name_first,
+                author_name_last, pub_year, num_pages, pub, imgUrl
+                FROM Books
+                WHERE book_id = ${id}
+            ;`, (error, result) => {
+                if (error) return cb(error, null);
+                const book = JSON.parse(JSON.stringify(result))[0];
+                connection.end();
+                return cb(null, book);
+        })
+    })
+}
 
 // returns an HTML table of the logged-in user's books
 const getBooksForUser = (user, cb) => {
@@ -127,23 +149,47 @@ const getBooksForUser = (user, cb) => {
                 WHERE user_id = ${user.id};`
             , (error) => {
             if (error) return cb(error, null);
-            connection.query(`Select title, author_name_first,
-                    author_name_last, pub_year FROM Books
+            connection.query(`SELECT Books.book_id, title, author_name_first,
+                    author_name_last, pub_year, num_pages, pub FROM Books
                     INNER JOIN UsersBooks
                     ON Books.book_id = UsersBooks.book_id
                     ;`, (error, result) => {
                 if (error) return cb(error, null);
                 const books = JSON.parse(JSON.stringify(result));
-                if (books.length === 0) { return cb(null, null );}
-                const booksTable = createTableFromArray(books);
-                return cb(null, booksTable);
+                if (books.length === 0) { return cb(null, null ); };
+                const booksTable = createBookTable(books);
                 connection.end();
+                return cb(null, booksTable);
             })
         })
     })
 }
 
+const createBookTable = (array) => {
+    const numRows = array.length;
+    let book = new Array;
+
+    let table = "<table>\n"
+    table += "<tr><th>Title</th><th>Author</th><th>Year</th><th>Pages</th><th>Publisher</th></tr>\n"
+
+    for (let i = 0; i < numRows; i++) {
+        // create array of all values for this book
+        book = Object.values(array[i]);
+        const author = book[2] + " " + book[3];
+        const url = `/book/?book_id=${book[0]}`;
+        
+        table += `<tr><td><a href="${url}">${book[1]}</a><a href="/"${book[1]}</a></td><td>${author}</td><td>${book[4]}</td><td>${book[5]}</td><td>${book[6]}</td>`;
+        
+        book = [];
+        table += "</tr>\n"
+    }
+
+    table += "</table>"
+    return table;
+}
+
 module.exports = {
     addBook,
-    getBooksForUser
+    getBooksForUser,
+    getBookById
 };

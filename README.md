@@ -27,6 +27,8 @@ For example, the question arises whether there should be a unique record of each
 
 In actual practice, one is immediately catapulted into thorny questions regarding what constitutes a "single book". Are different editions of the same book "one book" or "two books"? What about translations? These questions are outside of the scope of this project, but they are at least worth mentioning as a complication.
 
+For the purposes of this app, two books are "the same" if they have the same title and author. That reduces redundancy in backend storage, but it has limitations that would make it impractical in production.
+
 Hats off to Google for their Books API. There are features of this app that were a lot more difficult to implement than the ISBN lookup, but for me, none is more magical. Enter an ISBN and it'll pull the title, author, and other information from Google. It's quite satisfying to see it work.
 
 I would like to eventually extend this with a mobile application that scans barcodes and leverages this API to add books to your library that way - that is definitely on my wish list.

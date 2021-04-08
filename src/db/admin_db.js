@@ -33,7 +33,8 @@ const createDb = () => {
                 author_name_last VARCHAR(30), 
                 pub_year VARCHAR(10), 
                 pub VARCHAR(30), 
-                num_pages VARCHAR(8)
+                num_pages VARCHAR(8),
+                imgUrl VARCHAR(200)
                 );`,
                 (error) => {
                     if (error) throw `Error creating Books table: ${error}`;

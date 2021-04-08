@@ -22,7 +22,8 @@
 
     <nav>{{>nav}}</nav>
 
-    <main>     
+    <main>    
+
         {{#if reqUser.firstName}}
             <p>Welcome to your library page, {{reqUser.firstName}}.</p>
         {{/if}}
@@ -30,17 +31,10 @@
         {{#unless reqUser.firstName}}
             <p>Welcome to your library page.</p>
         {{/unless}}
+    
+        <div id="library">{{>library}}</div>
+    
     </main>
-
-    <div id="library">
-        {{#if userBooks}}
-            {{{ userBooks }}}
-        {{/if}}
-
-        {{#unless userBooks}}
-            <p>To get started, <a href="/book/add">add some books</a> to your collection!</p>
-        {{/unless}}
-    </div>
 </body>
 
 </html>

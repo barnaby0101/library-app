@@ -12,8 +12,8 @@ const getUser = (id, username, cb) => {
         user: "devuser",
         password: mysqlPassword
     });
-    connection.query("USE library;", (err) => {
-        if (err) throw `Error selecting library: ${error}`;
+    connection.query("USE library;", (error) => {
+        if (error) throw `Error selecting library: ${error}`;
     });
     if (!id && !username) throw "No ID or username provided.";
     if (id) {

@@ -5,8 +5,9 @@ const express = require("express");
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const ensureLogin = require("connect-ensure-login");
+const { unescape } = require("validator");
 
-const { addBook, getBooksForUser } = require("../db/book_db");
+const { addBook, getBooksForUser, getBookById } = require("../db/book_db");
 const { getBookInfo } = require("../../src/utils/googlebooks");
 const sessionSecret = process.env.SESSION_SECRET;
 
@@ -47,6 +48,23 @@ router.get("/book/add_result",
   (req, res) => {
     res.render("add_result", { reqUser: req.user }); 
 })
+
+// TODO add comments, error handling
+router.get("/book/",
+  ensureLogin.ensureLoggedIn("/login_warning"),
+  (req, res) => {
+    getBookById(req.query.book_id, (err, book) => {
+      res.render("book", { 
+        title: unescape(book.title),
+        author: book.author_name_first + " " + book.author_name_last,
+        year: book.pub_year,
+        pages: book.num_pages,
+        pub: book.pub,
+        imgUrl: book.imgUrl
+      });
+    });
+  }
+)
 
 router.post("/book/add/isbn", 
   (req, res) => {

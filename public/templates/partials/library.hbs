@@ -1,0 +1,7 @@
+{{#unless userBooks}}
+    <p>To get started, <a href="/book/add">add some books</a> to your collection!</p>
+{{/unless}}
+
+{{#if userBooks}}
+    {{{ userBooks }}}
+{{/if}}
