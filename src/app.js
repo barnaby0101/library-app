@@ -5,7 +5,6 @@ const express = require("express");
 const hbs = require("hbs");
 
 const user = require("./routers/user");
-const admin = require("./routers/admin");
 const book = require("./routers/book");
 
 const passport = require('passport');
@@ -15,6 +14,7 @@ const ensureLogin = require("connect-ensure-login");
 const { getBooksForUser } = require("../src/db/book_db");
 const { verifyPassword, getUser } = require("../src/db/user_db");
 const { sanitizeString } = require("../src/utils/utils");
+const { checkDbExists, wipeDb } = require("./db/admin_db");
 const sessionSecret = process.env.SESSION_SECRET;
 
 // verifyPassword() is expected to return a user object or null
@@ -42,7 +42,7 @@ passport.deserializeUser((id, cb) => {
 });
 
 const app = express();
-app.use(user, admin, book);
+app.use(user, book);
 
 const port = process.env.PORT || 3000;
 
@@ -92,6 +92,24 @@ app.get("/admin",
     // must be admin to access
     if (req.user.role !== "admin") res.render("404");
     res.render("admin"); 
+})
+
+// delete and recreate database
+app.post("/wipeDb", 
+  ensureLogin.ensureLoggedIn("/login_warning"),
+  (req, res) => {
+    if (req.user.role !== "admin") res.status(401).send();
+    wipeDb((err, success) => {
+        if (err) console.log("Error wiping database: ", err);
+        res.redirect(303, "/logout");
+    }); 
+})
+
+// does library exist
+app.get("/does_db_exist", (req, res) => {
+  checkDbExists((exists) => {
+      res.send(exists);
+  });
 })
 
 app.get("/login_warning", (req, res) => {

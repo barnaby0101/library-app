@@ -2,7 +2,7 @@
 <html lang="en-US">
 
 <head>
-    <title>Book Leaf</title>
+    <title>Update {{title}}</title>
     <meta charset="UTF-8">
     <meta name="description" content="A library inventory service for book collectors.">
     <meta name="author" content="Barnaby Thieme">
@@ -12,7 +12,7 @@
 
 <body>
     <header>
-        <h1>{{title}}</h1>
+        <h1>Update {{title}}</h1>
     </header>
 
     <nav>{{>nav}}</nav>
@@ -21,11 +21,7 @@
 
     <div id="book">{{>book}}</div>
 
-    <a href="/book/update?book_id={{bookId}}"><button>Edit</button></a>
-
-    {{!-- <form action="/book/update?book_id={{bookId}}">
-        <input type="submit" id="Edit" value="Edit">
-    </form> --}}
+    
 
     </main>
 </body>

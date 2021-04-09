@@ -11,13 +11,20 @@ const getBookInfo = (isbn, cb) => {
         else if (body.totalItems === 0) cb(null, false); // false if no matching book returned by api
         else {
             const book = body.items[0].volumeInfo;
-            const authorArray = book.authors[0].split(" ");
-
-            const authorFirstName = authorArray[0];
-            const authorLastName = authorArray[authorArray.length-1];
-            const pubYear = book.publishedDate.split("-")[0];
-            const numPages = book.pageCount.toString();
-            const imgUrl = book.imageLinks.thumbnail;
+            let authorArray = "";
+            let authorFirstName = "";
+            let authorLastName = "";    
+            if (book.authors[0]){
+                authorArray = book.authors[0].split(" ");
+                authorFirstName = authorArray[0];
+                authorLastName = authorArray[authorArray.length-1];    
+            }
+            let pubYear = "";
+            if (book.publishedDate) pubYear = book.publishedDate.split("-")[0];
+            let numPages = "";
+            if (book.pageCount) numPages = book.pageCount.toString();
+            let imgUrl = "";
+            if (book.imageLinks && book.imageLinks.thumbnail) imgUrl = book.imageLinks.thumbnail;
 
             cb(null, {
                 title: book.title,

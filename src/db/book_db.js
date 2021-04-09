@@ -7,7 +7,7 @@ const mysqlPassword = process.env.MYSQL_PASSWORD;
 
 const addBook = (book, user, cb) => {
     book = sanitizeObject(book);
-    book.imgUrl = unescape(book.imgUrl);
+    if (book.imgUrl) book.imgUrl = unescape(book.imgUrl);
     const connection = mysql.createConnection({
         host: "localhost",
         user: "devuser",
@@ -15,7 +15,7 @@ const addBook = (book, user, cb) => {
     });
     connection.query("USE library;", (error) => {
         if (error) {
-            console.log(`Error selecting Library: ${error}`);
+            console.log(`Error selecting Library while adding book: ${error}`);
             return cb(error, null);
         }
         // check if book already exists in library

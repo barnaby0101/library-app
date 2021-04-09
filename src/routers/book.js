@@ -54,17 +54,37 @@ router.get("/book/",
   ensureLogin.ensureLoggedIn("/login_warning"),
   (req, res) => {
     getBookById(req.query.book_id, (err, book) => {
+      if (err) console.log(`Error getting book information from db: ${err}`);
+      if (book.imgUrl === "undefined") book.imgUrl = undefined;
       res.render("book", { 
         title: unescape(book.title),
         author: book.author_name_first + " " + book.author_name_last,
         year: book.pub_year,
         pages: book.num_pages,
         pub: book.pub,
-        imgUrl: book.imgUrl
+        imgUrl: book.imgUrl,
+        bookId: req.query.book_id
       });
     });
   }
 )
+
+router.get("/book/update", 
+  ensureLogin.ensureLoggedIn("/login_warning"),
+  (req, res) => {
+    getBookById(req.query.book_id, (err, book) => {
+      if (err) console.log(`Error getting book information from db: ${err}`);
+      res.render("update", { 
+        title: unescape(book.title),
+        author: book.author_name_first + " " + book.author_name_last,
+        year: book.pub_year,
+        pages: book.num_pages,
+        pub: book.pub,
+        imgUrl: book.imgUrl,
+        bookId: req.query.book_id
+      });
+    })
+})
 
 router.post("/book/add/isbn", 
   (req, res) => {

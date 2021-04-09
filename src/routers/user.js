@@ -43,8 +43,10 @@ router.post("/user/create", (req, res) => {
       lastName: req.body.lastName,
       password: req.body.password
     };
-  createUser(newUser);
-  res.redirect("/user/create_successful");
+  createUser(newUser, (err, success) => {
+    if (err) console.log(`Error creating new user: ${err}`);
+    res.redirect(303, "/user/create_successful");
+  });
 })
 
 router.post("/user/delete", 

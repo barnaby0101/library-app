@@ -13,7 +13,7 @@ const getUser = (id, username, cb) => {
         password: mysqlPassword
     });
     connection.query("USE library;", (error) => {
-        if (error) throw `Error selecting library: ${error}`;
+        if (error) throw `Error selecting library while getting user: ${error}`;
     });
     if (!id && !username) throw "No ID or username provided.";
     if (id) {
@@ -59,7 +59,8 @@ const verifyPassword = (username, password, cb) => {
     })
 }
 
-const createUser = (newUser) => {
+// TODO update all error handling etc to use CB structure
+const createUser = (newUser, cb) => {
     newUser = sanitizeObject(newUser);
     const connection = mysql.createConnection({
         host: "localhost",
@@ -69,9 +70,9 @@ const createUser = (newUser) => {
     bcrypt.genSalt(10, (err, salt) => {
         if (err) throw `Error generating salt: ${err}`;
         bcrypt.hash(newUser.password, salt, (err, hashedPassword) => {
-            if (err) throw `Error hashing password: ${err}`;
+            if (err) cb(`Error hashing password: ${err}`, null);
             connection.query("USE library;", (err) => {
-                if (err) throw `Error selecting library: ${err}`;
+                if (err) cb(`Error selecting library while creating user: ${err}`, null);
                 connection.query(`INSERT INTO Users (
                         username,
                         first_name,
@@ -84,10 +85,11 @@ const createUser = (newUser) => {
                         "${newUser.firstName}",
                         "${newUser.lastName}",
                         "${hashedPassword}",
-                        "admin"
-                    );`, // TODO for now all users are admin
+                        "user"
+                    );`,
                     (err) => {
-                        if (err) throw `Error writing new user to database: ${err}`;
+                        if (err) cb(`Error writing new user to database: ${err}`, null);
+                        cb(null, true);                        
                     });
             });
         })
@@ -101,7 +103,7 @@ const deleteUser = (userId) => {
         password: mysqlPassword
     });
     connection.query("USE library;", (error) => {
-        if (error) throw `Error selecting library: ${error}`;
+        if (error) throw `Error selecting library while deleting user: ${error}`;
         connection.query(`DELETE FROM Users 
                 WHERE user_id=${userId}
             ;`,

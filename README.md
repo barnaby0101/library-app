@@ -6,9 +6,9 @@ Bibliotech is a web app that allows users to create an account and add book info
 
 ## Some interesting features
 
-* Served with Express
 * Pages are dynamically generated based on the logged-in user
-* Enter the ISBN and the app will retrieve the book data from Google Books API and add it to your library
+* Enter the ISBN and the app will retrieve the book data and cover image from Google Books API and add it to your library
+* Served with Express
 * Uses a MySQL backend (3NF)
 * Uses passport-local for session authentication
 * Passwords are hashed and salted
@@ -32,3 +32,19 @@ For the purposes of this app, two books are "the same" if they have the same tit
 Hats off to Google for their Books API. There are features of this app that were a lot more difficult to implement than the ISBN lookup, but for me, none is more magical. Enter an ISBN and it'll pull the title, author, and other information from Google. It's quite satisfying to see it work.
 
 I would like to eventually extend this with a mobile application that scans barcodes and leverages this API to add books to your library that way - that is definitely on my wish list.
+
+## Gallery
+
+Passport session authentication:
+
+![login screen](./src/img/cap4.png)
+
+Easy data entry leveraging the Google Books API:
+
+![book information submission form](./src/img/cap3.png)
+
+Dynamically-generated pages using Handlebars hbs:
+
+![library interface](./src/img/cap1.png)
+
+![book leaf page](./src/img/cap2.png)
