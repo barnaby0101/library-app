@@ -7,7 +7,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const ensureLogin = require("connect-ensure-login");
 const { unescape } = require("validator");
 
-const { addBook, getBooksForUser, getBookById } = require("../db/book_db");
+const { addBook, updateBook, getBooksForUser, getBookById } = require("../db/book_db");
 const { getBookInfo } = require("../../src/utils/googlebooks");
 const sessionSecret = process.env.SESSION_SECRET;
 
@@ -58,10 +58,10 @@ router.get("/book/",
       if (book.imgUrl === "undefined") book.imgUrl = undefined;
       res.render("book", { 
         title: unescape(book.title),
-        author: book.author_name_first + " " + book.author_name_last,
+        author: unescape(book.author_name_first + " " + book.author_name_last),
         year: book.pub_year,
         pages: book.num_pages,
-        pub: book.pub,
+        pub: unescape(book.pub),
         imgUrl: book.imgUrl,
         bookId: req.query.book_id
       });
@@ -119,6 +119,16 @@ router.post("/book/add",
         res.render("add_result", { result: "Sorry, something went wrong with our service."});
       }
       res.redirect(303, "/library?addSuccess=true"); 
+    });  
+})
+
+router.post("/book/update", 
+  (req, res) => {
+    updateBook(req.body, req.query.book_id, (err, success) => {
+      if (err) {
+        res.render("add_result", { result: "Sorry, something went wrong with our service."});
+      }
+      res.redirect(303, "/library?updateSuccess=true"); 
     });  
 })
 

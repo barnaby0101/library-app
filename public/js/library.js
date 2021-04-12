@@ -11,10 +11,18 @@ function GetURLParameter(sParam) {
 
 $( document ).ready(() => {
     const bookAdded = GetURLParameter("addSuccess");
+    const bookUpdated = GetURLParameter("updateSuccess");
     if (bookAdded) {
         $.toast({
             heading: "Success!",
             text: "Your book has been added to your library.",
+            position: "top-right"
+        })
+    }
+    if (bookUpdated) {
+        $.toast({
+            heading: "Success!",
+            text: "Your book has been updated.",
             position: "top-right"
         })
     }

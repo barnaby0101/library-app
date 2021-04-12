@@ -7,6 +7,7 @@ const mysqlPassword = process.env.MYSQL_PASSWORD;
 
 const addBook = (book, user, cb) => {
     book = sanitizeObject(book);
+    // imgUrl can only be retrieved from Google API so this is safe
     if (book.imgUrl) book.imgUrl = unescape(book.imgUrl);
     const connection = mysql.createConnection({
         host: "localhost",
@@ -114,6 +115,30 @@ const addBook = (book, user, cb) => {
     })
 }
 
+const updateBook = (update, bookId, cb) => {
+    update = sanitizeObject(update);
+    const connection = mysql.createConnection({
+        host: "localhost",
+        user: "devuser",
+        password: mysqlPassword
+    });
+    connection.query("USE library;", (error) => {
+        if (error) {
+            console.log(`Error selecting Library while updating book: ${error}`);
+            return cb(error, null);
+        }
+        const updateRequest = createUpdateRequest(update, bookId);
+        connection.query(`${updateRequest}`, (error) => {
+            if (error) {
+                console.log(`Error updating book to Books table: ${error}`);
+                return cb(error, null);
+            }
+            return cb(null, true);
+        })
+        // TODO add review update handling
+    });    
+}
+
 const getBookById = (id, cb) => {
     const connection = mysql.createConnection({
         host: "localhost",
@@ -188,8 +213,29 @@ const createBookTable = (array) => {
     return table;
 }
 
+const createUpdateRequest = (update, bookId) => {
+    let query = "UPDATE BOOKS SET ";
+    let array = new Array;
+
+    update.bookTitle && array.push(`title="${update.bookTitle}"`);
+    update.firstName && array.push(`author_name_first="${update.firstName}"`);
+    update.lastName && array.push(`author_name_last="${update.lastName}"`);
+    update.pubYear && array.push(`pub_year="${update.pubYear}"`);
+    update.pages && array.push(`num_pages="${update.pages}"`);
+    update.pub && array.push(`pub="${update.pub}"`);
+    update.review && array.push(`review="${update.review}"`);
+
+    for (let i = 0; i < array.length - 1; i++) {
+        query += array[i] + `, `;
+    }
+    
+    query += `${array[array.length - 1]} WHERE book_id=${bookId};`;
+    return query;
+}
+
 module.exports = {
     addBook,
+    updateBook,
     getBooksForUser,
     getBookById
 };

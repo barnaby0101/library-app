@@ -1,0 +1,23 @@
+<p>Author: {{author}}</p>
+<p>Year: {{year}}</p>
+<p>Pages: {{pages}}</p>
+<p>Publisher: {{pub}}</p>
+
+<form id="updateBook" method="post" action="/book/update?book_id={{bookId}}">
+    <input type="text" id="bookTitle" placeholder="Title" name="bookTitle">
+    <br><br>
+    <input type="text" id="firstName" placeholder="Author First Name" name="firstName">
+    <br><br>
+    <input type="text" id="lastName" placeholder="Author Last Name" name="lastName">
+    <br><br>
+    <input type="text" id="pubYear" placeholder="Year of Publication" name="pubYear">
+    <br><br>
+    <input type="text" id="pages" placeholder="Number of Pages" name="pages">
+    <br><br>
+    <input type="text" id="pub" placeholder="Publisher" name="pub">
+    <br><br>
+    <input type="text" id="review" placeholder="Review" name="review">
+    <br><br>
+    <!--submit-->
+    <input type="submit" id="updateBookButton" value="Update Book">
+</form>
