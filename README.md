@@ -21,11 +21,11 @@ Passport session authentication:
 
 Easy data entry leveraging the Google Books API:
 
-![book information submission form](./src/img/cap3.png)
+![book information submission form](./src/img/cap5.png)
 
 Dynamically-generated pages using Handlebars hbs:
 
-![library interface](./src/img/cap1.png)
+![library interface](./src/img/cap3.png)
 
 ![book leaf page](./src/img/cap2.png)
 
