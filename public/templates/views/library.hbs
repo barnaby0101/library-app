@@ -12,7 +12,7 @@
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="../js/jquery.toast.js"></script>
     <script src="../../js/library.js"></script>
-    <link rel="shortcut icon" href="#" />
+    <link rel="icon" href="../../img/favicon.ico" type="image/x-icon">
 </head>
 
 <body>
@@ -26,13 +26,15 @@
 
         {{#if reqUser.firstName}}
             <p>Welcome to your library page, {{reqUser.firstName}}.</p>
+        {{else}}
+            <p>Welcome to your library page.</p>
         {{/if}}
 
-        {{#unless reqUser.firstName}}
-            <p>Welcome to your library page.</p>
-        {{/unless}}
-    
-        <div id="library">{{>library}}</div>
+        {{#if userBooks}}
+            {{{ userBooks }}}
+        {{else}}
+            <p>To get started, <a href="/book/add">add some books</a> to your collection!</p>
+        {{/if}}
     
     </main>
 </body>

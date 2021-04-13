@@ -6,3 +6,10 @@
 <p>Year: {{year}}</p>
 <p>Pages: {{pages}}</p>
 <p>Publisher: {{pub}}</p>
+<p>Review: {{review}}</p>
+
+<a href="/book/update?book_id={{bookId}}"><button>Edit</button></a>
+
+<form method="post" action="/book/delete?book_id={{bookId}}" onsubmit="return confirm('Are you sure you want to delete your book? Your review and all content will be permanently deleted.');">
+<input type="submit" id="deleteBookButton" value="Delete">
+</form>

@@ -29,6 +29,12 @@ Dynamically-generated pages using Handlebars hbs:
 
 ![book leaf page](./src/img/cap2.png)
 
+## Usage
+
+Upon loading the root page, the app will look for the MySQL backend it expects. If it doesn't find it, it will try to create it, along with a default user account `admin` with the password `temp`. Naturally the first thing you should do is change that password in the Account page to something secure.
+
+The Admin account has access to the page /admin, which currently only has a page to let you blow away the database. All other accounts that are created have the role `user` and do not have access to that page.
+
 ## Design Comments
 
 My goal is to create an end-to-end web application that includes all necessary representative functionality, including a backend data store suitable for professional use and real-world security features including session-based authentication, input sanitization, and password hashing.

@@ -47,10 +47,12 @@ const addBook = (book, user, cb) => {
                                 // book exists but no ownership record
                                 connection.query(`INSERT INTO Ownership (
                                     user_id,
-                                    book_id
+                                    book_id,
+                                    review
                                 ) VALUES (
                                     "${user.id}",
-                                    "${bookId}"
+                                    "${bookId}",
+                                    "${book.review}"
                                 );`, (error) => {
                                     if (error) {
                                         console.log(`Error adding Ownership record: ${error}`);
@@ -93,15 +95,17 @@ const addBook = (book, user, cb) => {
                         console.log(`Error retrieving book: ${error}`);
                         return cb(error, null);
                     }
-                    book = JSON.parse(JSON.stringify(res))[0];
+                    const bookId = JSON.parse(JSON.stringify(res))[0].book_id;
                     // add ownership record for new entry
                     connection.query(`INSERT INTO Ownership (
                         user_id,
-                        book_id
+                        book_id,
+                        review
                     ) VALUES (
                         "${user.id}",
-                        "${book.book_id}"
-                    );`, (error) => {
+                        "${bookId}",
+                        "${book.review}"
+                    );`, (error, res) => {
                         if (error) {
                             console.log(`Error adding Ownership record: ${error}`);
                             return cb(error, null);
@@ -115,7 +119,40 @@ const addBook = (book, user, cb) => {
     })
 }
 
-const updateBook = (update, bookId, cb) => {
+const getBookById = (bookId, userId, cb) => {
+    const connection = mysql.createConnection({
+        host: "localhost",
+        user: "devuser",
+        password: mysqlPassword
+    });
+    connection.query("USE library;", (error) => { 
+        if (error) return cb(error, null);
+        connection.query(`SELECT title, author_name_first,
+                author_name_last, pub_year, num_pages, pub, imgUrl
+                FROM Books
+                WHERE book_id = ${bookId}
+            ;`, (error, result) => {
+                if (error) return cb(error, null);
+                let book = JSON.parse(JSON.stringify(result))[0];
+                book.title = unescape(book.title);
+                book.author_name_first = unescape(book.author_name_first);
+                book.author_name_last = unescape(book.author_name_last);
+                if (book.pub) { book.pub = unescape(book.pub); }
+                connection.query(`SELECT review
+                    FROM Ownership
+                    WHERE book_id=${bookId}
+                    AND user_id=${userId}
+                ;`, (error, result) => {
+                    if (error) return cb(error, null);
+                    if (result[0].review) book.review = unescape(result[0].review);
+                    connection.end();
+                    return cb(null, book);
+                })
+        })
+    })
+}
+
+const updateBook = (update, bookId, userId, cb) => {
     update = sanitizeObject(update);
     const connection = mysql.createConnection({
         host: "localhost",
@@ -128,36 +165,96 @@ const updateBook = (update, bookId, cb) => {
             return cb(error, null);
         }
         const updateRequest = createUpdateRequest(update, bookId);
-        connection.query(`${updateRequest}`, (error) => {
-            if (error) {
-                console.log(`Error updating book to Books table: ${error}`);
-                return cb(error, null);
-            }
+        // at least one field other than "review" has changed
+        if (updateRequest !== false) {
+            connection.query(`${updateRequest}`, (error) => {
+                if (error) {
+                    console.log(`Error updating book to Books table: ${error}`);
+                    return cb(error, null);
+                }
+                if (update.review) {
+                    connection.query(`UPDATE Ownership 
+                            SET review="${update.review}"
+                            WHERE user_id="${userId}"
+                            AND book_id="${bookId}";`
+                        , (error) => {
+                        if (error) {
+                            console.log(`Error updating book to Ownership table: ${error}`);
+                            return cb(error, null);
+                        }
+                    })
+                }
+                connection.end();
+                return cb(null, true);
+            })
+        }
+        // only review has changed
+        else {
+            connection.query(`UPDATE Ownership 
+                    SET review="${update.review}"
+                    WHERE user_id="${userId}"
+                    AND book_id="${bookId}";`
+                , (error) => {
+                if (error) {
+                    console.log(`Error updating book to Ownership table: ${error}`);
+                    return cb(error, null);
+                }
+            })
+            connection.end();
             return cb(null, true);
-        })
-        // TODO add review update handling
+        }
     });    
 }
 
-const getBookById = (id, cb) => {
+const deleteBookForUser = (bookId, userId, cb) => {
     const connection = mysql.createConnection({
         host: "localhost",
         user: "devuser",
         password: mysqlPassword
     });
-    connection.query("USE library;", (error) => { 
-        if (error) return cb(error, null);
-        connection.query(`SELECT title, author_name_first,
-                author_name_last, pub_year, num_pages, pub, imgUrl
-                FROM Books
-                WHERE book_id = ${id}
-            ;`, (error, result) => {
-                if (error) return cb(error, null);
-                const book = JSON.parse(JSON.stringify(result))[0];
-                connection.end();
-                return cb(null, book);
+    connection.query("USE library;", (error) => {
+        if (error) {
+            console.log(`Error selecting Library while deleting book: ${error}`);
+            return cb(error, null);
+        }
+        // book remains in DB, we just delete the ownership record
+        connection.query(`DELETE FROM Ownership 
+                WHERE book_id=${bookId} 
+                AND user_id=${userId};
+            `, (error) => {
+            if (error) {
+                console.log(`Error deleting book from Ownership table: ${error}`);
+                return cb(error, null);
+            }
+            connection.end();
+            return cb(null, true);
         })
-    })
+        }
+    )
+}
+
+const createUpdateRequest = (update, bookId) => {
+    //  if only review has been updated, exit
+    if (update.review && (update.bookTitle==="" && update.firstName==="" && update.lastName==="" && update.pubYear==="" && update.pages==="" && update.pub==="")) {
+        return false;
+    }
+
+    let query = "UPDATE BOOKS SET ";
+    let array = new Array;
+
+    update.bookTitle && array.push(`title="${update.bookTitle}"`);
+    update.firstName && array.push(`author_name_first="${update.firstName}"`);
+    update.lastName && array.push(`author_name_last="${update.lastName}"`);
+    update.pubYear && array.push(`pub_year="${update.pubYear}"`);
+    update.pages && array.push(`num_pages="${update.pages}"`);
+    update.pub && array.push(`pub="${update.pub}"`);
+
+    for (let i = 0; i < array.length - 1; i++) {
+        query += array[i] + `, `;
+    }
+    
+    query += `${array[array.length - 1]} WHERE book_id=${bookId};`;
+    return query;
 }
 
 // returns an HTML table of the logged-in user's books
@@ -213,29 +310,10 @@ const createBookTable = (array) => {
     return table;
 }
 
-const createUpdateRequest = (update, bookId) => {
-    let query = "UPDATE BOOKS SET ";
-    let array = new Array;
-
-    update.bookTitle && array.push(`title="${update.bookTitle}"`);
-    update.firstName && array.push(`author_name_first="${update.firstName}"`);
-    update.lastName && array.push(`author_name_last="${update.lastName}"`);
-    update.pubYear && array.push(`pub_year="${update.pubYear}"`);
-    update.pages && array.push(`num_pages="${update.pages}"`);
-    update.pub && array.push(`pub="${update.pub}"`);
-    update.review && array.push(`review="${update.review}"`);
-
-    for (let i = 0; i < array.length - 1; i++) {
-        query += array[i] + `, `;
-    }
-    
-    query += `${array[array.length - 1]} WHERE book_id=${bookId};`;
-    return query;
-}
-
 module.exports = {
     addBook,
     updateBook,
+    deleteBookForUser,
     getBooksForUser,
     getBookById
 };

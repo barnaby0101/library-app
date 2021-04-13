@@ -7,7 +7,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const ensureLogin = require("connect-ensure-login");
 const { unescape } = require("validator");
 
-const { addBook, updateBook, getBooksForUser, getBookById } = require("../db/book_db");
+const { addBook, updateBook, getBooksForUser, deleteBookForUser, getBookById } = require("../db/book_db");
 const { getBookInfo } = require("../../src/utils/googlebooks");
 const sessionSecret = process.env.SESSION_SECRET;
 
@@ -49,20 +49,21 @@ router.get("/book/add_result",
     res.render("add_result", { reqUser: req.user }); 
 })
 
-// TODO add comments, error handling
+// Get a single book leaf page
 router.get("/book/",
   ensureLogin.ensureLoggedIn("/login_warning"),
   (req, res) => {
-    getBookById(req.query.book_id, (err, book) => {
+    getBookById(req.query.book_id, req.user.id, (err, book) => {
       if (err) console.log(`Error getting book information from db: ${err}`);
       if (book.imgUrl === "undefined") book.imgUrl = undefined;
       res.render("book", { 
-        title: unescape(book.title),
-        author: unescape(book.author_name_first + " " + book.author_name_last),
+        title: book.title,
+        author: book.author_name_first + " " + book.author_name_last,
         year: book.pub_year,
         pages: book.num_pages,
-        pub: unescape(book.pub),
+        pub: book.pub,
         imgUrl: book.imgUrl,
+        review: book.review,
         bookId: req.query.book_id
       });
     });
@@ -72,7 +73,7 @@ router.get("/book/",
 router.get("/book/update", 
   ensureLogin.ensureLoggedIn("/login_warning"),
   (req, res) => {
-    getBookById(req.query.book_id, (err, book) => {
+    getBookById(req.query.book_id, req.user.id, (err, book) => {
       if (err) console.log(`Error getting book information from db: ${err}`);
       res.render("update", { 
         title: unescape(book.title),
@@ -81,6 +82,7 @@ router.get("/book/update",
         pages: book.num_pages,
         pub: book.pub,
         imgUrl: book.imgUrl,
+        review: book.review,
         bookId: req.query.book_id
       });
     })
@@ -122,9 +124,19 @@ router.post("/book/add",
     });  
 })
 
+router.post("/book/delete", 
+  (req, res) => {
+    deleteBookForUser(req.query.book_id, req.user.id, (err, success) => {
+      if (err) {
+        res.render("add_result", { result: "Sorry, something went wrong with our service."});
+      }
+      res.redirect(303, "/library?updateSuccess=true"); 
+    });  
+})
+
 router.post("/book/update", 
   (req, res) => {
-    updateBook(req.body, req.query.book_id, (err, success) => {
+    updateBook(req.body, req.query.book_id, req.user.id, (err, success) => {
       if (err) {
         res.render("add_result", { result: "Sorry, something went wrong with our service."});
       }

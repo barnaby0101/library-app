@@ -71,17 +71,7 @@ form input[type="submit"] {
     outline: none;
 }
 
-#account {
-    width: 50%;
-}
 
-#account th {
-    text-align: left;
-}
-
-#account tr {
-    text-align: left;
-}
 
 a:link {
     text-decoration: none;

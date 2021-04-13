@@ -14,7 +14,7 @@ const ensureLogin = require("connect-ensure-login");
 const { getBooksForUser } = require("../src/db/book_db");
 const { verifyPassword, getUser } = require("../src/db/user_db");
 const { sanitizeString } = require("../src/utils/utils");
-const { checkDbExists, wipeDb } = require("./db/admin_db");
+const { checkDbExists, initializeDb } = require("./db/admin_db");
 const sessionSecret = process.env.SESSION_SECRET;
 
 // verifyPassword() is expected to return a user object or null
@@ -36,7 +36,10 @@ passport.serializeUser((user, cb) => {
 
 passport.deserializeUser((id, cb) => {
   getUser(id, null, (err, user) => {
-      if (err) return cb("err with deserializeUser(): ", err);
+      if (err) {
+        console.log("Error deserializing user for session: ", err);
+        return cb(null, err);
+      }
       cb(null, user);
   });
 });
@@ -71,7 +74,26 @@ app.use(passport.session());
 // routes
 
 app.get("/", (req, res) => {
-  res.render("index"); 
+  checkDbExists((err, exists) => {
+    if (err) {
+      console.log(`Error checking database: ${err}`);
+      res.status(500).send();
+    }
+    if (exists) res.render("index");
+    else {
+      // if no DB found, attempt to create one
+      initializeDb((err, success) => {
+        if (err) {
+          console.log(`Error initializing database: ${err}`);
+          res.status(500).send();
+        }
+        if (success) {
+          console.log("Database initialized, loading index");
+          res.redirect("/");
+        }
+      });
+    }
+  })
 })
 
 app.post("/library", 
@@ -91,15 +113,15 @@ app.get("/admin",
   (req, res) => {
     // must be admin to access
     if (req.user.role !== "admin") res.render("404");
-    res.render("admin"); 
+    else res.render("admin"); 
 })
 
 // delete and recreate database
-app.post("/wipeDb", 
+app.post("/initializeDb", 
   ensureLogin.ensureLoggedIn("/login_warning"),
   (req, res) => {
     if (req.user.role !== "admin") res.status(401).send();
-    wipeDb((err, success) => {
+    initializeDb((err, success) => {
         if (err) console.log("Error wiping database: ", err);
         res.redirect(303, "/logout");
     }); 
@@ -107,7 +129,11 @@ app.post("/wipeDb",
 
 // does library exist
 app.get("/does_db_exist", (req, res) => {
-  checkDbExists((exists) => {
+  checkDbExists((err, exists) => {
+      if (err) {
+        console.log(`Error verifying database: ${err}`);
+        res.status(500).send();
+      }
       res.send(exists);
   });
 })
@@ -118,7 +144,7 @@ app.get("/login_warning", (req, res) => {
 
 app.get('/logout', (req, res) => {
   req.logout();
-  res.render("index");
+  res.redirect(303, "/");
 })
 
 app.get("*", (req, res) => { 

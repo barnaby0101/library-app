@@ -7,11 +7,8 @@
     <meta name="description" content="A library inventory service for book collectors.">
     <meta name="author" content="Barnaby Thieme">
     <link rel="stylesheet" type="text/css" href="../css/style.css">
-    <link rel="stylesheet" type="text/css" href="../css/index.css">
-    <script src="../js/admin.js" defer></script>
-    <script src="//code.jquery.com/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../img/favicon.ico" type="image/x-icon">
 </head>
 
 <body>
@@ -25,9 +22,8 @@
 
     <main>
         <p>The following button will completely delete and recreate the Library database. Use with caution - all records will be permanently deleted.</p>
-        <ul class="buttons">
-            <li><button id="wipeDb" type="button">Re-initialize Database</button></li>
-        </ul>
+        <form method="post" action="/initializeDb" onsubmit="return confirm('Are you sure you want to delete your database? This action cannot be reversed.');">
+        <input type="submit" id="initializeDb" value="Delete">
     </main>
 </body>
 

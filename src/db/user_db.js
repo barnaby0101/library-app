@@ -52,14 +52,16 @@ const verifyPassword = (username, password, cb) => {
         if (err) return cb(err, null);
         if (!user) return cb(null, null);
         bcrypt.compare(password, user.password, (err, res) => {
-            if (err) throw `Error while verifying password: ${err}`;
+            if (err) {
+                console.log(`Error while verifying password: ${err}`);
+                return cb(err, null);
+            }
             if (res) return cb(null, user);
             return cb(null, null);
         })
     })
 }
 
-// TODO update all error handling etc to use CB structure
 const createUser = (newUser, cb) => {
     newUser = sanitizeObject(newUser);
     const connection = mysql.createConnection({
@@ -85,9 +87,10 @@ const createUser = (newUser, cb) => {
                         "${newUser.firstName}",
                         "${newUser.lastName}",
                         "${hashedPassword}",
-                        "user"
+                        "${newUser.role || "user"}"
                     );`,
-                    (err) => {
+                    (err, res) => {
+                        connection.end();
                         if (err) cb(`Error writing new user to database: ${err}`, null);
                         cb(null, true);                        
                     });
@@ -113,6 +116,7 @@ const deleteUser = (userId) => {
                     WHERE user_id=${userId}
                 ;`,
                     (error) => {
+                        connection.end();
                         if (error) throw `Error deleting user records from Ownership table: ${error}`;
                     });
             });

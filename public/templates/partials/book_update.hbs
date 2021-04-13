@@ -2,6 +2,7 @@
 <p>Year: {{year}}</p>
 <p>Pages: {{pages}}</p>
 <p>Publisher: {{pub}}</p>
+<p>Review: {{review}}</p>
 
 <form id="updateBook" method="post" action="/book/update?book_id={{bookId}}">
     <input type="text" id="bookTitle" placeholder="Title" name="bookTitle">
@@ -16,7 +17,7 @@
     <br><br>
     <input type="text" id="pub" placeholder="Publisher" name="pub">
     <br><br>
-    <input type="text" id="review" placeholder="Review" name="review">
+    <textarea id="review" name="review" rows="6" cols="100" placeholder="Review"></textarea>
     <br><br>
     <!--submit-->
     <input type="submit" id="updateBookButton" value="Update Book">
