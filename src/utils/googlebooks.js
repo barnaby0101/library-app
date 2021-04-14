@@ -33,7 +33,8 @@ const getBookInfo = (isbn, cb) => {
                 pubYear,
                 pub: "-",
                 numPages,
-                imgUrl
+                imgUrl,
+                review: ""
             });
         }
     })

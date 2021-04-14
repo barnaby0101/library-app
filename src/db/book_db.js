@@ -154,6 +154,9 @@ const getBookById = (bookId, userId, cb) => {
 
 const updateBook = (update, bookId, userId, cb) => {
     update = sanitizeObject(update);
+    if (update.review) {
+        update.review = update.review.replace(/(?:\r\n|\r|\n)/g, '<br>');
+    }
     const connection = mysql.createConnection({
         host: "localhost",
         user: "devuser",
