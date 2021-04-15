@@ -89,7 +89,7 @@ app.get("/", (req, res) => {
         }
         if (success) {
           console.log("Database initialized, loading index");
-          res.redirect("/");
+          res.render(index);
         }
       });
     }

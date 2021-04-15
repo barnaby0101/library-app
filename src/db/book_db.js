@@ -301,7 +301,7 @@ const createBookTable = (array) => {
         // create array of all values for this book
         book = Object.values(array[i]);
         const author = book[2] + " " + book[3];
-        const url = `/book/?book_id=${book[0]}`;
+        const url = `/book?book_id=${book[0]}`;
         
         table += `<tr><td><a href="${url}">${book[1]}</a><a href="/"${book[1]}</a></td><td>${author}</td><td>${book[4]}</td><td>${book[5]}</td><td>${book[6]}</td>`;
         

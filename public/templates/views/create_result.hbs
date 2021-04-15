@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    {{#if success}}
+        <title>Account Created</title>
+    {{else}}
+        <title>Request Unsuccessful</title>
+    {{/if}}
+    <meta charset="UTF-8">
+    <meta name="description" content="A library inventory service for book collectors.">
+    <meta name="author" content="Barnaby Thieme">
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../img/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+    <header>
+        {{#if success}}
+        <h1>Account Created</h1>
+    {{else}}
+        <h1>Request Unsuccessful</h1>
+    {{/if}}
+</header>
+
+    <nav>{{>nav}}</nav>
+
+    <main> 
+
+    {{#if success}}
+        <p>Your account has been created!</p>
+
+        <p>Please log in to continue:</p>
+
+        <form id="login" method="post" action="/library">
+            <input type="text" name="username" id="username" placeholder="user name" required>
+            <br><br>
+            <input type="password" name="password" id="password" placeholder="password" required>
+            <br><br>
+            <input type="submit" id="loginButton" value="Log In">
+        </form>
+    {{/if}}
+
+    {{#if duplicate}}
+        <p>An account with that username already exists. Please choose another.</p>
+
+        <form id="createAccount" method="post" action="/user/create">
+            <input type="text" id="username" placeholder="user name" name="username">
+            <br><br>
+            <input type="text" id="firstName" placeholder="first name" name="firstName">
+            <br><br>
+            <input type="text" id="lastName" placeholder="last name" name="lastName">
+            <br><br>
+            <input type="password" id="password" placeholder="password" name="password">
+            <br><br>
+            <input type="password" id="passwordConfirm" placeholder="confirm password" name="passwordConfirm">
+            <br><br>
+            <!--submit-->
+            <input type="submit" id="createAccountButton" value="Create Account">
+        </form>
+    {{/if}}
+
+    {{#if error}}
+        <p>We're sorry, something appears to be wrong with our service. Please try again later.</p>
+    {{/if}}
+
+
+
+    </main>
+</body>
+
+</html>

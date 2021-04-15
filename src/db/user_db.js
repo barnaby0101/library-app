@@ -64,37 +64,46 @@ const verifyPassword = (username, password, cb) => {
 
 const createUser = (newUser, cb) => {
     newUser = sanitizeObject(newUser);
-    const connection = mysql.createConnection({
-        host: "localhost",
-        user: "devuser",
-        password: mysqlPassword
-    });
-    bcrypt.genSalt(10, (err, salt) => {
-        if (err) throw `Error generating salt: ${err}`;
-        bcrypt.hash(newUser.password, salt, (err, hashedPassword) => {
-            if (err) cb(`Error hashing password: ${err}`, null);
-            connection.query("USE library;", (err) => {
-                if (err) cb(`Error selecting library while creating user: ${err}`, null);
-                connection.query(`INSERT INTO Users (
-                        username,
-                        first_name,
-                        last_name,
-                        password,
-                        role
-                    ) 
-                    VALUES (
-                        "${newUser.username}",
-                        "${newUser.firstName}",
-                        "${newUser.lastName}",
-                        "${hashedPassword}",
-                        "${newUser.role || "user"}"
-                    );`,
-                    (err, res) => {
-                        connection.end();
-                        if (err) cb(`Error writing new user to database: ${err}`, null);
-                        cb(null, true);                        
-                    });
-            });
+    getUser(null, newUser.username, (err, res) => {
+        if (err) {
+            console.log(`Error creating user: ${err}`);
+            return cb(err, null);
+        }
+        if (res) {
+            return cb("username already exists", null)
+        } 
+        const connection = mysql.createConnection({
+            host: "localhost",
+            user: "devuser",
+            password: mysqlPassword
+        });
+        bcrypt.genSalt(10, (err, salt) => {
+            if (err) throw `Error generating salt: ${err}`;
+            bcrypt.hash(newUser.password, salt, (err, hashedPassword) => {
+                if (err) cb(`Error hashing password: ${err}`, null);
+                connection.query("USE library;", (err) => {
+                    if (err) cb(`Error selecting library while creating user: ${err}`, null);
+                    connection.query(`INSERT INTO Users (
+                            username,
+                            first_name,
+                            last_name,
+                            password,
+                            role
+                        ) 
+                        VALUES (
+                            "${newUser.username}",
+                            "${newUser.firstName}",
+                            "${newUser.lastName}",
+                            "${hashedPassword}",
+                            "${newUser.role || "user"}"
+                        );`,
+                        (err, res) => {
+                            connection.end();
+                            if (err) cb(`Error writing new user to database: ${err}`, null);
+                            cb(null, true);                        
+                        });
+                });
+            })
         })
     })
 }

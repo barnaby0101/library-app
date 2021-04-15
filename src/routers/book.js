@@ -50,7 +50,7 @@ router.get("/book/add_result",
 })
 
 // Get a single book leaf page
-router.get("/book/",
+router.get("/book",
   ensureLogin.ensureLoggedIn("/login_warning"),
   (req, res) => {
     getBookById(req.query.book_id, req.user.id, (err, book) => {

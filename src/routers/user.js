@@ -44,9 +44,23 @@ router.post("/user/create", (req, res) => {
       password: req.body.password
     };
   createUser(newUser, (err, success) => {
-    if (err) console.log(`Error creating new user: ${err}`);
-    res.redirect(303, "/user/create_successful");
+    if (err) {
+      console.log(`Error creating new user: ${err}`);
+      if (err = "username already exists") {
+        return res.redirect("/user/create_result?duplicate=true")
+      } else {
+        return res.redirect("/user/create_result?error=true")
+      }
+    }
+    res.redirect(303, "/user/create_result?success=true");
   });
+})
+
+router.get("/user/create_result", (req, res) => {
+  res.render("create_result", { 
+    success: req.query.success,
+    duplicate: req.query.duplicate
+  }); 
 })
 
 router.post("/user/delete", 
@@ -69,10 +83,6 @@ router.post("/user/update",
       }
       updateUser(update);
       res.redirect("/user/update_successful");
-})
-
-router.get("/user/create_successful", (req, res) => {
-  res.render("create_successful"); 
 })
 
 router.get("/user/update_successful", (req, res) => {
