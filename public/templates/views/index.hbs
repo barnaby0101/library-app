@@ -29,7 +29,10 @@
             <input type="submit" id="loginButton" value="Log In">
         </form>
 
-        <p>If you are new here, please <a href="/user/create">create a free account</a> to get started!</p>
+        {{#unless accessRestricted}}
+            <p>If you are new here, please <a href="/user/create">create a free account</a> to get started!</p>
+        {{/unless}}
+
     </main>
 </body>
 

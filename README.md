@@ -31,9 +31,11 @@ Dynamically-generated pages using Handlebars hbs:
 
 ## Usage
 
-Upon loading the root page, the app will look for the MySQL backend it expects. If it doesn't find it, it will try to create it, along with a default user account `admin` with the password `temp`. Naturally the first thing you should do is change that password in the Account page to something secure.
+When loading the root page, the app will look for the MySQL backend it expects. If it doesn't find it, it will try to create it, along with a default user account `admin` with the password `temp`. Naturally the first thing you should do is change that password in the Account page to something secure.
 
-The Admin account has access to the page /admin, which currently only has a page to let you blow away the database. All other accounts that are created have the role `user` and do not have access to that page.
+The Admin account has access to the page /admin. All other accounts that are created have the role `user` and do not have access to that page. The admin may erase all library records from the admin page. It will be automatically recreated when they redirect to the index.
+
+If the environment variable `ACCOUNT_CREATE_ACCESS_RESTRICTED` is set to `true`, only the admin may create new user accounts from the admin page. If false, anyone may create a new account from the index.
 
 ## Design Comments
 

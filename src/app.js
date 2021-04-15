@@ -15,7 +15,9 @@ const { getBooksForUser } = require("../src/db/book_db");
 const { verifyPassword, getUser } = require("../src/db/user_db");
 const { sanitizeString } = require("../src/utils/utils");
 const { checkDbExists, initializeDb } = require("./db/admin_db");
+
 const sessionSecret = process.env.SESSION_SECRET;
+const accessRestricted = process.env.ACCOUNT_CREATE_ACCESS_RESTRICTED === "true";
 
 // verifyPassword() is expected to return a user object or null
 passport.use(new LocalStrategy(
@@ -79,7 +81,9 @@ app.get("/", (req, res) => {
       console.log(`Error checking database: ${err}`);
       res.status(500).send();
     }
-    if (exists) res.render("index");
+    if (exists) {
+      res.render("index", { accessRestricted });
+    }
     else {
       // if no DB found, attempt to create one
       initializeDb((err, success) => {
@@ -89,7 +93,7 @@ app.get("/", (req, res) => {
         }
         if (success) {
           console.log("Database initialized, loading index");
-          res.render(index);
+          res.render("index", { accessRestricted });
         }
       });
     }
