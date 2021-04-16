@@ -1,6 +1,7 @@
 "use strict";
 
 const mysql = require("mysql");
+const mysqlDbName = process.env.MYSQL_DB_NAME;
 const mysqlHost = process.env.MYSQL_HOST;
 const mysqlUsername = process.env.MYSQL_USERNAME;
 const mysqlPassword = process.env.MYSQL_PASSWORD;
@@ -12,17 +13,17 @@ const initializeDb = (cb) => {
         user: mysqlUsername,
         password: mysqlPassword
     });
-    connection.query('DROP DATABASE IF EXISTS library;', (error, res) => {
+    connection.query(`DROP DATABASE IF EXISTS ${mysqlDbName};`, (error, res) => {
         if (error) {
             console.log(`Error deleting database: ${error}`);
             cb(error, null);
         }
-        connection.query("CREATE DATABASE IF NOT EXISTS library;", (error, res) => {
+        connection.query(`CREATE DATABASE IF NOT EXISTS ${mysqlDbName};`, (error, res) => {
             if (error) {
                 console.log(`Error creating database: ${error}`);
                 cb(error, null);
             }   
-            connection.query("USE library;", (error, res) => {
+            connection.query(`USE ${mysqlDbName};`, (error, res) => {
                 if (error) {
                     console.log(`Error selecting library while creating db: ${error}`);
                     cb(error, null);
@@ -98,7 +99,7 @@ const checkDbExists = (cb) => {     // cb() invoked on BOOL, true if db exists
         password: mysqlPassword
     });
     connection.query(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA
-            WHERE SCHEMA_NAME = "library";`, 
+            WHERE SCHEMA_NAME = "${mysqlDbName}";`, 
         (error, res) => {
             if (error) {
                 console.log(`Error while checking if library database exists: ${error}`);

@@ -27,8 +27,11 @@
         
         <p>Use with caution - all records will be deleted.</p>
 
-        <form method="post" action="/initializeDb" onsubmit="return confirm('Are you sure you want to delete your database? This action cannot be reversed.');">
-        <input type="submit" id="initializeDb" value="Delete">
+        <form method="post" action="/initializeDb" 
+            onsubmit="return confirm('Are you sure you want to delete your database? 
+            This action cannot be reversed.');"
+        >
+        <input type="submit" id="initializeDb" name="initializeDb" value="Delete">
 
         <h2>Create User Account</h2>
 
@@ -44,7 +47,7 @@
             <input type="password" id="passwordConfirm" placeholder="confirm password" name="passwordConfirm">
             <br><br>
             <!--submit-->
-            <input type="submit" id="createAccountButton" value="Create Account">
+            <input type="submit" id="createAccountButton" name="createAccountButton" value="Create Account">
         </form>
     </main>
 </body>

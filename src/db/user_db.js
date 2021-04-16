@@ -4,6 +4,7 @@ const mysql = require("mysql");
 const bcrypt = require('bcryptjs');
 const { sanitizeObject } = require("../utils/utils");
 
+const mysqlDbName = process.env.MYSQL_DB_NAME;
 const mysqlHost = process.env.MYSQL_HOST;
 const mysqlUsername = process.env.MYSQL_USERNAME;
 const mysqlPassword = process.env.MYSQL_PASSWORD;
@@ -15,7 +16,7 @@ const getUser = (id, username, cb) => {
         user: mysqlUsername,
         password: mysqlPassword
     });
-    connection.query("USE library;", (error) => {
+    connection.query(`USE ${mysqlDbName};`, (error) => {
         if (error) throw `Error selecting library while getting user: ${error}`;
     });
     if (!id && !username) throw "No ID or username provided.";
@@ -84,7 +85,7 @@ const createUser = (newUser, cb) => {
             if (err) throw `Error generating salt: ${err}`;
             bcrypt.hash(newUser.password, salt, (err, hashedPassword) => {
                 if (err) cb(`Error hashing password: ${err}`, null);
-                connection.query("USE library;", (err) => {
+                connection.query(`USE ${mysqlDbName};`, (err) => {
                     if (err) cb(`Error selecting library while creating user: ${err}`, null);
                     connection.query(`INSERT INTO Users (
                             username,
@@ -117,7 +118,7 @@ const deleteUser = (userId) => {
         user: mysqlUsername,
         password: mysqlPassword
     });
-    connection.query("USE library;", (error) => {
+    connection.query(`USE ${mysqlDbName};`, (error) => {
         if (error) throw `Error selecting library while deleting user: ${error}`;
         connection.query(`DELETE FROM Users 
                 WHERE user_id=${userId}
@@ -142,8 +143,8 @@ const updateUser = (update) => {
         user: mysqlUsername,
         password: mysqlPassword
     });
-    connection.query("USE library;", (error) => {
-        if (error) throw `USE library error: ${error}`;
+    connection.query(`USE ${mysqlDbName};`, (error) => {
+        if (error) throw `Error selecting DB: ${error}`;
         if (update.username) {
             connection.query(`UPDATE Users 
                 SET username = "${update.username}"

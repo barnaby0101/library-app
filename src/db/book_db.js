@@ -4,6 +4,7 @@ const mysql = require("mysql");
 const { unescape } = require("validator");
 const { sanitizeObject } = require("../utils/utils");
 
+const mysqlDbName = process.env.MYSQL_DB_NAME;
 const mysqlHost = process.env.MYSQL_HOST;
 const mysqlUsername = process.env.MYSQL_USERNAME;
 const mysqlPassword = process.env.MYSQL_PASSWORD;
@@ -17,7 +18,7 @@ const addBook = (book, user, cb) => {
         user: mysqlUsername,
         password: mysqlPassword
     });
-    connection.query("USE library;", (error) => {
+    connection.query(`USE ${mysqlDbName};`, (error) => {
         if (error) {
             console.log(`Error selecting Library while adding book: ${error}`);
             return cb(error, null);
@@ -128,7 +129,7 @@ const getBookById = (bookId, userId, cb) => {
         user: mysqlUsername,
         password: mysqlPassword
     });
-    connection.query("USE library;", (error) => { 
+    connection.query(`USE ${mysqlDbName};`, (error) => { 
         if (error) return cb(error, null);
         connection.query(`SELECT title, author_name_first,
                 author_name_last, pub_year, num_pages, pub, imgUrl
@@ -165,7 +166,7 @@ const updateBook = (update, bookId, userId, cb) => {
         user: mysqlUsername,
         password: mysqlPassword
     });
-    connection.query("USE library;", (error) => {
+    connection.query(`USE ${mysqlDbName};`, (error) => {
         if (error) {
             console.log(`Error selecting Library while updating book: ${error}`);
             return cb(error, null);
@@ -218,7 +219,7 @@ const deleteBookForUser = (bookId, userId, cb) => {
         user: mysqlUsername,
         password: mysqlPassword
     });
-    connection.query("USE library;", (error) => {
+    connection.query(`USE ${mysqlDbName};`, (error) => {
         if (error) {
             console.log(`Error selecting Library while deleting book: ${error}`);
             return cb(error, null);
@@ -270,7 +271,7 @@ const getBooksForUser = (user, cb) => {
         user: mysqlUsername,
         password: mysqlPassword
     });
-    connection.query("USE library;", (error) => { 
+    connection.query(`USE ${mysqlDbName};`, (error) => { 
         if (error) return cb(error, null);
         connection.query(`CREATE TEMPORARY TABLE UsersBooks
                 SELECT * FROM OWNERSHIP 
