@@ -4,6 +4,7 @@
   "description": "A Node web app for tracking your book collection.",
   "main": "src/app.js",
   "scripts": {
+    "start": "node ./src/app.js",
     "dev": "env-cmd -f ./config/dev.env nodemon src/app.js",
     "test": "jest --runInBand"
   },

@@ -1,12 +1,13 @@
 "use strict";
 
 const mysql = require("mysql");
+const mysqlHost = process.env.MYSQL_HOST;
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 const { createUser } = require("../db/user_db");
 
 const initializeDb = (cb) => {
     const connection = mysql.createConnection({
-        host: "localhost",
+        host: mysqlHost,
         user: "devuser",
         password: mysqlPassword
     });
@@ -91,7 +92,7 @@ const initializeDb = (cb) => {
 
 const checkDbExists = (cb) => {     // cb() invoked on BOOL, true if db exists
     const connection = mysql.createConnection({
-        host: "localhost",
+        host: mysqlHost,
         user: "devuser",
         password: mysqlPassword
     });

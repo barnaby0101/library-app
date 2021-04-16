@@ -3,12 +3,14 @@
 const mysql = require("mysql");
 const bcrypt = require('bcryptjs');
 const { sanitizeObject } = require("../utils/utils");
+
+const mysqlHost = process.env.MYSQL_HOST;
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 
 const getUser = (id, username, cb) => {
     let user = {};
     const connection = mysql.createConnection({
-        host: "localhost",
+        host: mysqlHost,
         user: "devuser",
         password: mysqlPassword
     });
@@ -73,7 +75,7 @@ const createUser = (newUser, cb) => {
             return cb("username already exists", null)
         } 
         const connection = mysql.createConnection({
-            host: "localhost",
+            host: mysqlHost,
             user: "devuser",
             password: mysqlPassword
         });
@@ -110,7 +112,7 @@ const createUser = (newUser, cb) => {
 
 const deleteUser = (userId) => {
     const connection = mysql.createConnection({
-        host: "localhost",
+        host: mysqlHost,
         user: "devuser",
         password: mysqlPassword
     });
@@ -135,7 +137,7 @@ const deleteUser = (userId) => {
 const updateUser = (update) => {
     update = sanitizeObject(update);
     const connection = mysql.createConnection({
-        host: "localhost",
+        host: mysqlHost,
         user: "devuser",
         password: mysqlPassword
     });

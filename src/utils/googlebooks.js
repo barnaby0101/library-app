@@ -25,17 +25,20 @@ const getBookInfo = (isbn, cb) => {
             if (book.pageCount) numPages = book.pageCount.toString();
             let imgUrl = "";
             if (book.imageLinks && book.imageLinks.thumbnail) imgUrl = book.imageLinks.thumbnail;
+            let pub = book.publisher || "-";
 
-            cb(null, {
+            const bookInfo = {
                 title: book.title,
                 authorFirstName,
                 authorLastName,
                 pubYear,
-                pub: "-",
+                pub,
                 numPages,
                 imgUrl,
                 review: ""
-            });
+            }
+
+            cb(null, bookInfo);
         }
     })
 }

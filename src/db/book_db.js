@@ -3,6 +3,8 @@
 const mysql = require("mysql");
 const { unescape } = require("validator");
 const { sanitizeObject } = require("../utils/utils");
+
+const mysqlHost = process.env.MYSQL_HOST;
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 
 const addBook = (book, user, cb) => {
@@ -10,7 +12,7 @@ const addBook = (book, user, cb) => {
     // imgUrl can only be retrieved from Google API so this is safe
     if (book.imgUrl) book.imgUrl = unescape(book.imgUrl);
     const connection = mysql.createConnection({
-        host: "localhost",
+        host: mysqlHost,
         user: "devuser",
         password: mysqlPassword
     });
@@ -121,7 +123,7 @@ const addBook = (book, user, cb) => {
 
 const getBookById = (bookId, userId, cb) => {
     const connection = mysql.createConnection({
-        host: "localhost",
+        host: mysqlHost,
         user: "devuser",
         password: mysqlPassword
     });
@@ -158,7 +160,7 @@ const updateBook = (update, bookId, userId, cb) => {
         update.review = update.review.replace(/(?:\r\n|\r|\n)/g, '<br>');
     }
     const connection = mysql.createConnection({
-        host: "localhost",
+        host: mysqlHost,
         user: "devuser",
         password: mysqlPassword
     });
@@ -211,7 +213,7 @@ const updateBook = (update, bookId, userId, cb) => {
 
 const deleteBookForUser = (bookId, userId, cb) => {
     const connection = mysql.createConnection({
-        host: "localhost",
+        host: mysqlHost,
         user: "devuser",
         password: mysqlPassword
     });
@@ -263,7 +265,7 @@ const createUpdateRequest = (update, bookId) => {
 // returns an HTML table of the logged-in user's books
 const getBooksForUser = (user, cb) => {
     const connection = mysql.createConnection({
-        host: "localhost",
+        host: mysqlHost,
         user: "devuser",
         password: mysqlPassword
     });
