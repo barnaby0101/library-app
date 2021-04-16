@@ -92,25 +92,45 @@ const initializeDb = (cb) => {
     });
 }
 
-const checkDbExists = (cb) => {     // cb() invoked on BOOL, true if db exists
+const checkTablesExist = (cb) => {     // cb() invoked on BOOL, true if all tables exists
+    let tableCount = 0;
     const connection = mysql.createConnection({
         host: mysqlHost,
         user: mysqlUsername,
         password: mysqlPassword
     });
-    connection.query(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA
-            WHERE SCHEMA_NAME = "${mysqlDbName}";`, 
+    connection.query(`SELECT count(*) FROM information_schema.TABLES
+            WHERE (TABLE_SCHEMA = "${mysqlDbName}") AND (TABLE_NAME = "Books");`,
         (error, res) => {
             if (error) {
-                console.log(`Error while checking if library database exists: ${error}`);
+                console.log(`Error while checking if db table exists: ${error}`);
                 return cb (error, null)
             }
-        connection.end()
-        return cb(null, Boolean(res.length !== 0));
+            tableCount += res;
+            connection.query(`SELECT count(*) FROM information_schema.TABLES
+                WHERE (TABLE_SCHEMA = "${mysqlDbName}") AND (TABLE_NAME = "Users");`,
+            (error, res) => {
+                if (error) {
+                    console.log(`Error while checking if db table exists: ${error}`);
+                    return cb (error, null)
+                }
+                tableCount += res;
+                connection.query(`SELECT count(*) FROM information_schema.TABLES
+                    WHERE (TABLE_SCHEMA = "${mysqlDbName}") AND (TABLE_NAME = "Ownership");`,
+                (error, res) => {
+                    if (error) {
+                        console.log(`Error while checking if db table exists: ${error}`);
+                        return cb (error, null)
+                    }
+                    tableCount += res;
+                connection.end()
+                return cb(null, Boolean(tableCount !== 0));
+            })
+        })
     });
 }
 
 module.exports = {
     initializeDb,
-    checkDbExists
+    checkTablesExist
 };

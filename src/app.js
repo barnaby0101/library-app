@@ -14,7 +14,7 @@ const ensureLogin = require("connect-ensure-login");
 const { getBooksForUser } = require("../src/db/book_db");
 const { verifyPassword, getUser } = require("../src/db/user_db");
 const { sanitizeString } = require("../src/utils/utils");
-const { checkDbExists, initializeDb } = require("./db/admin_db");
+const { checkTablesExist, initializeDb } = require("./db/admin_db");
 
 const sessionSecret = process.env.SESSION_SECRET;
 const accessRestricted = process.env.ACCOUNT_CREATE_ACCESS_RESTRICTED === "true";
@@ -76,7 +76,7 @@ app.use(passport.session());
 // routes
 
 app.get("/", (req, res) => {
-  checkDbExists((err, exists) => {
+  checkTablesExist((err, exists) => {
     if (err) {
       console.log(`Error checking database: ${err}`);
       res.status(500).send();
@@ -133,7 +133,7 @@ app.post("/initializeDb",
 
 // does library exist
 app.get("/does_db_exist", (req, res) => {
-  checkDbExists((err, exists) => {
+  checkTablesExist((err, exists) => {
       if (err) {
         console.log(`Error verifying database: ${err}`);
         res.status(500).send();
