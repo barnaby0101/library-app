@@ -5,13 +5,14 @@ const bcrypt = require('bcryptjs');
 const { sanitizeObject } = require("../utils/utils");
 
 const mysqlHost = process.env.MYSQL_HOST;
+const mysqlUsername = process.env.MYSQL_USERNAME;
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 
 const getUser = (id, username, cb) => {
     let user = {};
     const connection = mysql.createConnection({
         host: mysqlHost,
-        user: "devuser",
+        user: mysqlUsername,
         password: mysqlPassword
     });
     connection.query("USE library;", (error) => {
@@ -76,7 +77,7 @@ const createUser = (newUser, cb) => {
         } 
         const connection = mysql.createConnection({
             host: mysqlHost,
-            user: "devuser",
+            user: mysqlUsername,
             password: mysqlPassword
         });
         bcrypt.genSalt(10, (err, salt) => {
@@ -113,7 +114,7 @@ const createUser = (newUser, cb) => {
 const deleteUser = (userId) => {
     const connection = mysql.createConnection({
         host: mysqlHost,
-        user: "devuser",
+        user: mysqlUsername,
         password: mysqlPassword
     });
     connection.query("USE library;", (error) => {
@@ -138,7 +139,7 @@ const updateUser = (update) => {
     update = sanitizeObject(update);
     const connection = mysql.createConnection({
         host: mysqlHost,
-        user: "devuser",
+        user: mysqlUsername,
         password: mysqlPassword
     });
     connection.query("USE library;", (error) => {

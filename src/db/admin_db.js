@@ -2,13 +2,14 @@
 
 const mysql = require("mysql");
 const mysqlHost = process.env.MYSQL_HOST;
+const mysqlUsername = process.env.MYSQL_USERNAME;
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 const { createUser } = require("../db/user_db");
 
 const initializeDb = (cb) => {
     const connection = mysql.createConnection({
         host: mysqlHost,
-        user: "devuser",
+        user: mysqlUsername,
         password: mysqlPassword
     });
     connection.query('DROP DATABASE IF EXISTS library;', (error, res) => {
@@ -93,7 +94,7 @@ const initializeDb = (cb) => {
 const checkDbExists = (cb) => {     // cb() invoked on BOOL, true if db exists
     const connection = mysql.createConnection({
         host: mysqlHost,
-        user: "devuser",
+        user: mysqlUsername,
         password: mysqlPassword
     });
     connection.query(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA

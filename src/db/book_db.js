@@ -5,6 +5,7 @@ const { unescape } = require("validator");
 const { sanitizeObject } = require("../utils/utils");
 
 const mysqlHost = process.env.MYSQL_HOST;
+const mysqlUsername = process.env.MYSQL_USERNAME;
 const mysqlPassword = process.env.MYSQL_PASSWORD;
 
 const addBook = (book, user, cb) => {
@@ -13,7 +14,7 @@ const addBook = (book, user, cb) => {
     if (book.imgUrl) book.imgUrl = unescape(book.imgUrl);
     const connection = mysql.createConnection({
         host: mysqlHost,
-        user: "devuser",
+        user: mysqlUsername,
         password: mysqlPassword
     });
     connection.query("USE library;", (error) => {
@@ -124,7 +125,7 @@ const addBook = (book, user, cb) => {
 const getBookById = (bookId, userId, cb) => {
     const connection = mysql.createConnection({
         host: mysqlHost,
-        user: "devuser",
+        user: mysqlUsername,
         password: mysqlPassword
     });
     connection.query("USE library;", (error) => { 
@@ -161,7 +162,7 @@ const updateBook = (update, bookId, userId, cb) => {
     }
     const connection = mysql.createConnection({
         host: mysqlHost,
-        user: "devuser",
+        user: mysqlUsername,
         password: mysqlPassword
     });
     connection.query("USE library;", (error) => {
@@ -214,7 +215,7 @@ const updateBook = (update, bookId, userId, cb) => {
 const deleteBookForUser = (bookId, userId, cb) => {
     const connection = mysql.createConnection({
         host: mysqlHost,
-        user: "devuser",
+        user: mysqlUsername,
         password: mysqlPassword
     });
     connection.query("USE library;", (error) => {
@@ -266,7 +267,7 @@ const createUpdateRequest = (update, bookId) => {
 const getBooksForUser = (user, cb) => {
     const connection = mysql.createConnection({
         host: mysqlHost,
-        user: "devuser",
+        user: mysqlUsername,
         password: mysqlPassword
     });
     connection.query("USE library;", (error) => { 
