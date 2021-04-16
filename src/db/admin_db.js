@@ -13,22 +13,17 @@ const initializeDb = (cb) => {
         user: mysqlUsername,
         password: mysqlPassword
     });
-    connection.query(`DROP DATABASE IF EXISTS ${mysqlDbName};`, (error, res) => {
+    connection.query(`USE ${mysqlDbName};`, (error, res) => {
         if (error) {
-            console.log(`Error deleting database: ${error}`);
+            console.log(`Error selecting library while creating db: ${error}`);
             cb(error, null);
         }
-        connection.query(`CREATE DATABASE IF NOT EXISTS ${mysqlDbName};`, (error, res) => {
+        connection.query(`DROP TABLE IF EXISTS Users,Books,Ownership;`, (error, res) => {
             if (error) {
-                console.log(`Error creating database: ${error}`);
+                console.log(`Error deleting database: ${error}`);
                 cb(error, null);
-            }   
-            connection.query(`USE ${mysqlDbName};`, (error, res) => {
-                if (error) {
-                    console.log(`Error selecting library while creating db: ${error}`);
-                    cb(error, null);
-                }   
-                connection.query(`CREATE TABLE IF NOT EXISTS Books (
+            }
+            connection.query(`CREATE TABLE IF NOT EXISTS Books (
                     book_id INT PRIMARY KEY AUTO_INCREMENT,
                     title VARCHAR(100), 
                     author_name_first VARCHAR(30), 
@@ -37,62 +32,64 @@ const initializeDb = (cb) => {
                     pub VARCHAR(30), 
                     num_pages VARCHAR(8),
                     imgUrl VARCHAR(200)
-                    );`,
+                );`,
+                (error, res) => {
+                if (error) {
+                    console.log(`Error creating Books table: ${error}`);
+                    cb(error, null);
+                }
+                console.log("Books table created.")
+                connection.query(`CREATE TABLE IF NOT EXISTS Users (
+                        user_id INT PRIMARY KEY AUTO_INCREMENT,
+                        username VARCHAR(30),
+                        first_name VARCHAR(30),
+                        last_name VARCHAR(30),
+                        password VARCHAR(60), 
+                        role ENUM("user", "admin")
+                        );`,
                     (error, res) => {
                         if (error) {
-                            console.log(`Error creating Books table: ${error}`);
+                            console.log(`Error creating Users table: ${error}`);
                             cb(error, null);
                         }
-                        connection.query(`CREATE TABLE IF NOT EXISTS Users (
-                            user_id INT PRIMARY KEY AUTO_INCREMENT,
-                            username VARCHAR(30),
-                            first_name VARCHAR(30),
-                            last_name VARCHAR(30),
-                            password VARCHAR(60), 
-                            role ENUM("user", "admin")
+                        console.log("Users table created.")
+                    connection.query(`CREATE TABLE IF NOT EXISTS Ownership (
+                            user_id INT,
+                            book_id INT,
+                            review VARCHAR(2500),
+                            rating INT,
+                            PRIMARY KEY (user_id, book_id)
                             );`,
-                            (error, res) => {
+                        (error, res) => {
+                            if (error) {
+                                console.log(`Error creating Ownership table: ${error}`);
+                                cb(error, null);
+                            }
+                            console.log("Ownership table created.")
+                            // create hard-coded admin account
+                            createUser({
+                                username: "admin",
+                                firstName: "",
+                                lastName: "",
+                                password: "temp",
+                                role: "admin"
+                            }, (error, res) => {
                                 if (error) {
-                                    console.log(`Error creating Users table: ${error}`);
+                                    console.log(`Error creating admin account: ${error}`);
                                     cb(error, null);
                                 }
-                                connection.query(`CREATE TABLE IF NOT EXISTS Ownership (
-                                    user_id INT,
-                                    book_id INT,
-                                    review VARCHAR(2500),
-                                    rating INT,
-                                    PRIMARY KEY (user_id, book_id)
-                                    );`,
-                                    (error, res) => {
-                                        if (error) {
-                                            console.log(`Error creating Ownership table: ${error}`);
-                                            cb(error, null);
-                                        }
-                                        // create hard-coded admin account
-                                        createUser({
-                                            username: "admin",
-                                            firstName: "",
-                                            lastName: "",
-                                            password: "temp",
-                                            role: "admin"
-                                        }, (error, res) => {
-                                            if (error) {
-                                                console.log(`Error creating admin account: ${error}`);
-                                                cb(error, null);
-                                            }
-                                            connection.end();
-                                            if (res) console.log("Database initialized!");
-                                            cb(null, true);
-                                        });
-                                    });
+                                connection.end();
+                                if (res) console.log("Database initialized!");
+                                cb(null, true);
                             });
+                        });
                     });
             });
         });
     });
 }
 
-const checkTablesExist = (cb) => {     // cb() invoked on BOOL, true if all tables exists
+const checkTablesExist = (cb) => {     // cb() invoked on BOOL, true if tables exist
     let tableCount = 0;
     const connection = mysql.createConnection({
         host: mysqlHost,
@@ -104,30 +101,35 @@ const checkTablesExist = (cb) => {     // cb() invoked on BOOL, true if all tabl
         (error, res) => {
             if (error) {
                 console.log(`Error while checking if db table exists: ${error}`);
-                return cb (error, null)
+                return cb(error, null)
             }
-            tableCount += res;
+            tableCount += parseTableCheckResult(res);
             connection.query(`SELECT count(*) FROM information_schema.TABLES
                 WHERE (TABLE_SCHEMA = "${mysqlDbName}") AND (TABLE_NAME = "Users");`,
-            (error, res) => {
-                if (error) {
-                    console.log(`Error while checking if db table exists: ${error}`);
-                    return cb (error, null)
-                }
-                tableCount += res;
-                connection.query(`SELECT count(*) FROM information_schema.TABLES
-                    WHERE (TABLE_SCHEMA = "${mysqlDbName}") AND (TABLE_NAME = "Ownership");`,
                 (error, res) => {
                     if (error) {
                         console.log(`Error while checking if db table exists: ${error}`);
-                        return cb (error, null)
+                        return cb(error, null)
                     }
-                    tableCount += res;
-                connection.end()
-                return cb(null, Boolean(tableCount !== 0));
-            })
-        })
-    });
+                    tableCount += parseTableCheckResult(res);
+                    connection.query(`SELECT count(*) FROM information_schema.TABLES
+                    WHERE (TABLE_SCHEMA = "${mysqlDbName}") AND (TABLE_NAME = "Ownership");`,
+                        (error, res) => {
+                            if (error) {
+                                console.log(`Error while checking if db table exists: ${error}`);
+                                return cb(error, null)
+                            }
+                            tableCount += parseTableCheckResult(res);
+                            connection.end()
+                            const exists = Boolean(tableCount !== 0);
+                            return cb(null, exists);
+                        })
+                })
+        });
+}
+
+const parseTableCheckResult = (str) => {
+    return Object.values(JSON.parse(JSON.stringify(str))[0])[0];
 }
 
 module.exports = {

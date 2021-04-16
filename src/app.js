@@ -146,11 +146,6 @@ app.get("/login_warning", (req, res) => {
   res.render("login_warning"); 
 })
 
-app.get('/logout', (req, res) => {
-  req.logout();
-  res.redirect(303, "/");
-})
-
 app.get("*", (req, res) => { 
   res.render("404"); 
 })

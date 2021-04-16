@@ -2,7 +2,9 @@
 
 Bibliotech is a web app that allows users to create an account and add book information for their personal libraries. I created it from scratch as a project/demo application.
 
-**Status**: This project is currently in development.
+## Preview and Status
+
+V1 of this version is complete, and is live on Heroku [here](https://thieme-bibliotech.herokuapp.com/). Please contact me if you'd like an account to check it out.
 
 ## Some interesting features
 
@@ -31,11 +33,18 @@ Dynamically-generated pages using Handlebars hbs:
 
 ## Usage
 
+Bibliotech requires a MySQL backend. The following environment variables must be configured:
+
+* `MYSQL_DB_NAME`
+* `MYSQL_HOST`
+* `MYSQL_USERNAME`
+* `MYSQL_PASSWORD`
+* `SESSION_SECRET`
+* `ACCOUNT_CREATE_ACCESS_RESTRICTED` - when `false` anyone may create a user account from the root page. When `true` user accounts may only be created by the admin on the page `/admin`.
+
 When loading the root page, the app will look for the MySQL backend it expects. If it doesn't find it, it will try to create it, along with a default user account `admin` with the password `temp`. Naturally the first thing you should do is change that password in the Account page to something secure.
 
-The Admin account has access to the page /admin. All other accounts that are created have the role `user` and do not have access to that page. The admin may erase all library records from the admin page. It will be automatically recreated when they redirect to the index.
-
-If the environment variable `ACCOUNT_CREATE_ACCESS_RESTRICTED` is set to `true`, only the admin may create new user accounts from the admin page. If false, anyone may create a new account from the index.
+The Admin account has access to the page /admin. All other accounts have the role `user` and do not have access to that page. The admin may erase all library records from the admin page by deleting all tables from the database. Those tables will be automatically recreated when the root page is loaded.
 
 ## Design Comments
 

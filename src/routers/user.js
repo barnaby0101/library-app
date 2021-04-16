@@ -8,6 +8,7 @@ const ensureLogin = require("connect-ensure-login");
 
 const { createUser, deleteUser, updateUser } = require("../db/user_db");
 const sessionSecret = process.env.SESSION_SECRET;
+const accessRestricted = process.env.ACCOUNT_CREATE_ACCESS_RESTRICTED === "true";
 
 // express setup
 
@@ -91,7 +92,7 @@ router.get("/user/update_successful", (req, res) => {
 
 router.get('/logout', (req, res) => {
   req.logout();
-  res.render("index");
+  res.render("index", { accessRestricted });
 })
 
 
